@@ -67,10 +67,7 @@ function useInView(threshold = 0.15) {
 }
 
 // ─── Heading using ShuffleText ────────────────────────────────────────────────
-// Replace the AnimatedHeading component and the eyebrow paragraph with this:
-
 function AnimatedHeading({ inView, headingKey }: { inView: boolean; headingKey: string | number }) {
-
   return (
     <div className="ab-heading-wrap">
       {/* Eyebrow line — dash + label */}
@@ -199,13 +196,13 @@ function RightImage() {
 export default function AboutSection() {
   const { ref: leftRef, inView: leftIn } = useInView(0.1);
   const [headingKey, setHeadingKey] = useState(0);
-  const [openFaq, setOpenFaq] = useState(0); // first item open by default
+  const [openFaq, setOpenFaq] = useState<number | null>(0); // first item open by default
 
   useEffect(() => {
     if (leftIn) setHeadingKey((k) => k + 1);
   }, [leftIn]);
 
-  const toggle = (i) => setOpenFaq((cur) => (cur === i ? null : i));
+  const toggle = (i: number) => setOpenFaq((cur) => (cur === i ? null : i));
 
   return (
     <>
@@ -264,31 +261,29 @@ export default function AboutSection() {
           overflow: visible;
         }
 
-
-
         /* ── Eyebrow — dash + small caps label (matches screenshot style) ── */
-.ab-eyebrow-inline {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 18px;
-}
-.ab-eyebrow-dash {
-  display: block;
-  width: 32px;
-  height: 2px;
-  background: #2DBFBF;
-  border-radius: 2px;
-  flex-shrink: 0;
-}
-.ab-eyebrow-text {
-  font-family: 'Outfit', sans-serif;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: #2DBFBF;
-}
+        .ab-eyebrow-inline {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin-bottom: 18px;
+        }
+        .ab-eyebrow-dash {
+          display: block;
+          width: 32px;
+          height: 2px;
+          background: #2DBFBF;
+          border-radius: 2px;
+          flex-shrink: 0;
+        }
+        .ab-eyebrow-text {
+          font-family: 'Outfit', sans-serif;
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 0.16em;
+          text-transform: uppercase;
+          color: #2DBFBF;
+        }
         .ab-heading-line {
           display: block;
           font-family: 'Outfit', sans-serif !important;
@@ -391,8 +386,6 @@ export default function AboutSection() {
           opacity: 0;
           transition: opacity 0.9s ease 0.2s;
           margin-top: 106px;
-          
-          
         }
         .ab-right-img-in { opacity: 1; }
 
