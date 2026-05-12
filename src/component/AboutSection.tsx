@@ -134,7 +134,7 @@ function AnimatedButton({ label, bg, layers }: { label: string; bg: string; laye
   );
 }
 
-function GhostButton({ label }) {
+function GhostButton({ label }: { label: string }) {
   return (
     <button className="ab-uv-ghost">
       <span className="ab-uv-ghost-bg">
