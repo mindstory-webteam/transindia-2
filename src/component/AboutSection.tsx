@@ -116,7 +116,7 @@ function AnimatedHeading({ inView, headingKey }: { inView: boolean; headingKey: 
 }
 
 // ─── Buttons (preserved original style + wave animation) ─────────────────────
-function AnimatedButton({ label, bg, layers }) {
+function AnimatedButton({ label, bg, layers }: { label: string; bg: string; layers: string[] }) {
   return (
     <button className="ab-uv-btn" style={{ "--btn-bg": bg }}>
       <span className="ab-uv-bg">
