@@ -30,36 +30,43 @@ function useInView(threshold = 0.15) {
   return { ref, inView };
 }
 
-// ─── Animated Button ──────────────────────────────────────────────────────────
-function AnimatedButton({ label, bg, layers, variant = "fill" }: {
+// ─── Fill Button ──────────────────────────────────────────────────────────────
+function FillButton({ label, bg, layers }: {
   label: string;
   bg: string;
   layers: [string, string, string];
-  variant?: "fill" | "ghost";
 }) {
-  if (variant === "ghost") {
-    return (
-      <button className="cta-ghost-btn">
-        <span className="cta-ghost-bg" />
-        <span className="cta-btn-inner">
-          <span className="cta-btn-static">{label}</span>
-          <span className="cta-btn-hover">{label}</span>
-        </span>
-      </button>
-    );
-  }
   return (
-    <button className="cta-fill-btn" style={{ "--btn-bg": bg } as React.CSSProperties}>
-      <span className="cta-fill-bg">
-        <span className="cta-fill-layers">
-          <span className="cta-fill-layer cta-l1" style={{ background: layers[0] }} />
-          <span className="cta-fill-layer cta-l2" style={{ background: layers[1] }} />
-          <span className="cta-fill-layer cta-l3" style={{ background: layers[2] }} />
+    <button className="cta-uv-btn" style={{ "--btn-bg": bg } as React.CSSProperties}>
+      <span className="cta-uv-bg">
+        <span className="cta-uv-layers">
+          <span className="cta-uv-layer cta-uv-l1" style={{ background: layers[0] }} />
+          <span className="cta-uv-layer cta-uv-l2" style={{ background: layers[1] }} />
+          <span className="cta-uv-layer cta-uv-l3" style={{ background: layers[2] }} />
         </span>
       </span>
-      <span className="cta-btn-inner">
-        <span className="cta-btn-static">{label}</span>
-        <span className="cta-btn-hover">{label}</span>
+      <span className="cta-uv-inner">
+        <span className="cta-uv-static">{label}</span>
+        <span className="cta-uv-hover">{label}</span>
+      </span>
+    </button>
+  );
+}
+
+// ─── Ghost Button ─────────────────────────────────────────────────────────────
+function GhostButton({ label }: { label: string }) {
+  return (
+    <button className="cta-uv-ghost">
+      <span className="cta-uv-ghost-bg">
+        <span className="cta-uv-layers">
+          <span className="cta-uv-layer cta-uv-l1" style={{ background: "rgba(255,255,255,0.12)" }} />
+          <span className="cta-uv-layer cta-uv-l2" style={{ background: "rgba(255,255,255,0.08)" }} />
+          <span className="cta-uv-layer cta-uv-l3" style={{ background: "rgba(255,255,255,0.05)" }} />
+        </span>
+      </span>
+      <span className="cta-uv-inner">
+        <span className="cta-uv-static">{label}</span>
+        <span className="cta-uv-hover">{label}</span>
       </span>
     </button>
   );
@@ -83,7 +90,7 @@ export default function CTABanner() {
         /* ══ SECTION WRAPPER ═══════════════════════════════════════════ */
         .cta-section {
           font-family: 'Outfit', sans-serif;
-          padding: 80px 9vw;
+          padding: 80px 0 0;
           background: transparent;
           position: relative;
           z-index: 1;
@@ -92,13 +99,12 @@ export default function CTABanner() {
         /* ══ BANNER CARD ═══════════════════════════════════════════════ */
         .cta-banner {
           position: relative;
-          border-radius: 28px;
+          border-radius: 0;
           overflow: hidden;
-          min-height: 260px;
+          min-height: 200px;
           display: flex;
           align-items: center;
-
-          /* Base teal gradient — left to right, fades to slightly darker teal */
+          justify-content: center;
           background: linear-gradient(
             115deg,
             #1aafaf 0%,
@@ -106,8 +112,6 @@ export default function CTABanner() {
             #22b0b0 60%,
             #178080 100%
           );
-
-          /* Entrance animation */
           opacity: 0;
           transform: translateY(24px) scale(0.99);
           transition:
@@ -119,7 +123,7 @@ export default function CTABanner() {
           transform: translateY(0) scale(1);
         }
 
-        /* ── Noise texture overlay for depth ── */
+        /* ── Noise texture overlay ── */
         .cta-banner::before {
           content: '';
           position: absolute; inset: 0;
@@ -129,92 +133,67 @@ export default function CTABanner() {
           border-radius: inherit;
         }
 
-        /* ── Right image with fading mask ── */
+        /* ── Right image ── */
         .cta-image-wrap {
           position: absolute;
           top: 0; right: 0;
-          width: 55%;
-          height: 100%;
-          z-index: 0;
-          pointer-events: none;
+          width: 55%; height: 100%;
+          z-index: 0; pointer-events: none;
         }
         .cta-image {
           width: 100%; height: 100%;
-          object-fit: cover;
-          object-position: center top;
-          display: block;
-          /* Fade: left edge fully transparent, right edge visible */
-          -webkit-mask-image: linear-gradient(
-            to right,
-            transparent 0%,
-            rgba(0,0,0,0.15) 20%,
-            rgba(0,0,0,0.55) 42%,
-            rgba(0,0,0,0.82) 65%,
-            rgba(0,0,0,0.95) 85%,
-            rgba(0,0,0,1)  100%
-          );
-          mask-image: linear-gradient(
-            to right,
-            transparent 0%,
-            rgba(0,0,0,0.15) 20%,
-            rgba(0,0,0,0.55) 42%,
-            rgba(0,0,0,0.82) 65%,
-            rgba(0,0,0,0.95) 85%,
-            rgba(0,0,0,1)  100%
-          );
-          /* Blend into the teal behind it */
-          mix-blend-mode: luminosity;
-          opacity: 0.25;
+          object-fit: cover; object-position: center top; display: block;
+          -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.15) 20%, rgba(0,0,0,0.55) 42%, rgba(0,0,0,0.82) 65%, rgba(0,0,0,0.95) 85%, rgba(0,0,0,1) 100%);
+          mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.15) 20%, rgba(0,0,0,0.55) 42%, rgba(0,0,0,0.82) 65%, rgba(0,0,0,0.95) 85%, rgba(0,0,0,1) 100%);
+          mix-blend-mode: luminosity; opacity: 0.25;
         }
 
-        /* ── Decorative circle blobs ── */
-        .cta-blob-1 {
-          position: absolute; top: -60px; right: 30%;
-          width: 280px; height: 280px; border-radius: 50%;
-          background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
-          pointer-events: none; z-index: 1;
+        /* ── Left image (mirrored) ── */
+        .cta-image-wrap-left {
+          position: absolute;
+          top: 0; left: 0;
+          width: 55%; height: 100%;
+          z-index: 0; pointer-events: none;
         }
-        .cta-blob-2 {
-          position: absolute; bottom: -80px; right: 10%;
-          width: 340px; height: 340px; border-radius: 50%;
-          background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
-          pointer-events: none; z-index: 1;
-        }
+       
 
-        /* ── Teal-to-image gradient transition ── */
+        /* ── Blobs ── */
+        .cta-blob-1 { position: absolute; top: -60px; right: 30%; width: 280px; height: 280px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%); pointer-events: none; z-index: 1; }
+        .cta-blob-2 { position: absolute; bottom: -80px; right: 10%; width: 340px; height: 340px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%); pointer-events: none; z-index: 1; }
+
+        /* ── Overlay — fades both edges toward center ── */
         .cta-overlay {
           position: absolute; inset: 0;
           background: linear-gradient(
             to right,
-            #2DBFBF 0%,
-            #2DBFBF 38%,
-            rgba(45,191,191,0.88) 50%,
-            rgba(45,191,191,0.45) 68%,
-            rgba(45,191,191,0.10) 85%,
+            transparent 0%,
+            rgba(45,191,191,0.45) 18%,
+            rgba(45,191,191,0.88) 32%,
+            #2DBFBF 42%,
+            #2DBFBF 58%,
+            rgba(45,191,191,0.88) 68%,
+            rgba(45,191,191,0.45) 82%,
             transparent 100%
           );
-          z-index: 2;
-          pointer-events: none;
+          z-index: 2; pointer-events: none;
         }
-
-        /* ── Subtle bottom gradient ── */
         .cta-bottom-grad {
-          position: absolute; bottom: 0; left: 0; right: 0;
-          height: 60px;
+          position: absolute; bottom: 0; left: 0; right: 0; height: 60px;
           background: linear-gradient(to top, rgba(23,130,130,0.35), transparent);
           pointer-events: none; z-index: 2;
         }
 
-        /* ══ CONTENT ═══════════════════════════════════════════════════ */
+        /* ══ CONTENT — centered ════════════════════════════════════════ */
         .cta-content {
           position: relative; z-index: 3;
           padding: 52px 56px;
           max-width: 640px;
+          width: 100%;
           display: flex; flex-direction: column; gap: 0;
+          align-items: center;
+          text-align: center;
         }
-        @media (max-width: 680px) {
-          .cta-content { padding: 40px 32px; }
-        }
+        @media (max-width: 680px) { .cta-content { padding: 40px 32px; } }
 
         /* ── Eyebrow ── */
         .cta-eyebrow {
@@ -240,143 +219,146 @@ export default function CTABanner() {
           color: ${B.white} !important;
           overflow: visible !important;
           padding-bottom: 4px !important;
+          text-align: center !important;
         }
         .cta-heading-coral { color: #ffcfc9 !important; }
 
         /* ── Sub text ── */
         .cta-sub {
           font-family: 'Outfit', sans-serif;
-          font-size: 14.5px;
-          font-weight: 400;
+          font-size: 14.5px; font-weight: 400;
           color: rgba(255,255,255,0.72);
-          line-height: 1.65;
-          margin: 0 0 32px;
-          max-width: 420px;
+          line-height: 1.65; margin: 0 0 32px; max-width: 420px;
+          text-align: center;
         }
         .cta-sub strong { color: rgba(255,255,255,0.95); font-weight: 600; }
 
         /* ── Button row ── */
         .cta-btn-row {
           display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+          justify-content: center;
         }
 
-        /* ── Fill button ── */
-        .cta-fill-btn {
-          all: unset; position: relative; display: inline-flex;
-          height: 50px; align-items: center; border-radius: 9999px; padding: 0 28px;
-          font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700;
-          color: ${B.teal}; cursor: pointer; user-select: none; white-space: nowrap;
+        /* ══ FILL BUTTON (wave) ════════════════════════════════════════ */
+        .cta-uv-btn {
+          all: unset;
+          position: relative; display: inline-flex;
+          height: 50px; align-items: center;
+          border-radius: 9999px; padding: 0 30px;
+          font-family: 'Outfit', sans-serif; font-size: 14.5px; font-weight: 700;
+          color: ${B.teal}; letter-spacing: 0.01em; cursor: pointer; user-select: none;
+          white-space: nowrap;
         }
-        .cta-fill-bg {
-          overflow: hidden; border-radius: 9999px; position: absolute; inset: 0;
-          background: ${B.white};
+        .cta-uv-bg {
+          overflow: hidden; border-radius: 9999px;
+          position: absolute; inset: 0;
+          background: var(--btn-bg);
           box-shadow: 0 4px 24px rgba(0,0,0,.18);
           transition: transform 1.8s cubic-bezier(0.19,1,0.22,1);
         }
-        .cta-fill-btn:hover .cta-fill-bg { transform: scale(1.04); }
-        .cta-fill-layers {
-          display: block; position: absolute; left: 50%; top: -60%; transform: translate(-50%);
-          aspect-ratio: 1/1; width: max(200%,10rem);
-        }
-        .cta-fill-layer {
-          display: block; border-radius: 9999px; position: absolute; inset: 0; transform: scale(0);
-        }
-        .cta-fill-btn:hover .cta-fill-layer { transition: transform 1.3s cubic-bezier(0.19,1,0.22,1); }
-        .cta-fill-btn:hover .cta-l1 { transform: scale(1); }
-        .cta-fill-btn:hover .cta-l2 { transition-delay: .1s; transform: scale(1); }
-        .cta-fill-btn:hover .cta-l3 { transition-delay: .2s; transform: scale(1); }
+        .cta-uv-btn:hover .cta-uv-bg { transform: scale(1.04); }
 
-        /* ── Ghost button ── */
-        .cta-ghost-btn {
-          all: unset; position: relative; display: inline-flex;
-          height: 50px; align-items: center; border-radius: 9999px; padding: 0 24px;
-          font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 600;
-          color: rgba(255,255,255,0.90); cursor: pointer; user-select: none; white-space: nowrap;
+        /* ══ GHOST BUTTON (wave) ═══════════════════════════════════════ */
+        .cta-uv-ghost {
+          all: unset;
+          position: relative; display: inline-flex;
+          height: 50px; align-items: center;
+          border-radius: 9999px; padding: 0 26px;
+          font-family: 'Outfit', sans-serif; font-size: 14.5px; font-weight: 600;
+          color: rgba(255,255,255,0.90); cursor: pointer; user-select: none;
+          white-space: nowrap;
         }
-        .cta-ghost-bg {
-          position: absolute; inset: 0; border-radius: 9999px;
-          border: 1.5px solid rgba(255,255,255,0.35);
+        .cta-uv-ghost-bg {
+          overflow: hidden; border-radius: 9999px;
+          position: absolute; inset: 0;
           background: rgba(255,255,255,0.08);
+          border: 1.5px solid rgba(255,255,255,0.35);
           backdrop-filter: blur(4px);
-          transition:
-            border-color 0.28s ease,
-            background 0.28s ease,
-            transform 1.8s cubic-bezier(0.19,1,0.22,1);
+          transition: transform 1.8s cubic-bezier(0.19,1,0.22,1), border-color 0.3s ease, background 0.3s ease;
         }
-        .cta-ghost-btn:hover .cta-ghost-bg {
+        .cta-uv-ghost:hover .cta-uv-ghost-bg {
+          transform: scale(1.04);
           border-color: rgba(255,255,255,0.65);
           background: rgba(255,255,255,0.16);
-          transform: scale(1.04);
         }
 
-        /* ── Shared btn inner ── */
-        .cta-btn-inner { position: relative; display: block; pointer-events: none; }
-        .cta-btn-static, .cta-btn-hover { display: block; pointer-events: none; }
-        .cta-btn-hover {
-          position: absolute; top: 0; left: 0;
-          opacity: 0; transform: translateY(70%);
+        /* ══ SHARED WAVE LAYERS ════════════════════════════════════════ */
+        .cta-uv-layers {
+          display: block; position: absolute;
+          left: 50%; top: -60%; transform: translate(-50%);
+          aspect-ratio: 1/1; width: max(200%, 10rem);
         }
-        .cta-fill-btn:hover .cta-btn-static,
-        .cta-ghost-btn:hover .cta-btn-static {
+        .cta-uv-layer {
+          display: block; border-radius: 9999px;
+          position: absolute; inset: 0; transform: scale(0);
+        }
+        .cta-uv-btn:hover .cta-uv-layer,
+        .cta-uv-ghost:hover .cta-uv-layer {
+          transition: transform 1.3s cubic-bezier(0.19,1,0.22,1);
+        }
+        .cta-uv-btn:hover .cta-uv-l1,
+        .cta-uv-ghost:hover .cta-uv-l1 { transform: scale(1); }
+        .cta-uv-btn:hover .cta-uv-l2,
+        .cta-uv-ghost:hover .cta-uv-l2 { transition-delay: 0.1s; transform: scale(1); }
+        .cta-uv-btn:hover .cta-uv-l3,
+        .cta-uv-ghost:hover .cta-uv-l3 { transition-delay: 0.2s; transform: scale(1); }
+
+        /* ══ SHARED TEXT SLIDE ═════════════════════════════════════════ */
+        .cta-uv-inner { position: relative; display: block; pointer-events: none; }
+        .cta-uv-static, .cta-uv-hover { display: block; pointer-events: none; }
+        .cta-uv-hover { position: absolute; top: 0; left: 0; opacity: 0; transform: translateY(70%); }
+
+        .cta-uv-btn:hover .cta-uv-static,
+        .cta-uv-ghost:hover .cta-uv-static {
           opacity: 0; transform: translateY(-70%);
-          transition: transform 1.4s cubic-bezier(0.19,1,0.22,1), opacity .3s linear;
+          transition: transform 1.4s cubic-bezier(0.19,1,0.22,1), opacity 0.3s linear;
         }
-        .cta-fill-btn:hover .cta-btn-hover,
-        .cta-ghost-btn:hover .cta-btn-hover {
+        .cta-uv-btn:hover .cta-uv-hover,
+        .cta-uv-ghost:hover .cta-uv-hover {
           opacity: 1; transform: translateY(0);
           transition: transform 1.4s cubic-bezier(0.19,1,0.22,1), opacity 1.4s cubic-bezier(0.19,1,0.22,1);
         }
 
         /* ── Trust strip ── */
         .cta-trust {
-          margin-top: 28px;
-          display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+          margin-top: 28px; display: flex; align-items: center;
+          gap: 18px; flex-wrap: wrap;
+          justify-content: center;
         }
         .cta-trust-item {
           display: flex; align-items: center; gap: 6px;
           font-family: 'Outfit', sans-serif;
           font-size: 12px; font-weight: 600;
-          color: rgba(255,255,255,0.60);
-          letter-spacing: 0.02em;
+          color: rgba(255,255,255,0.60); letter-spacing: 0.02em;
         }
-        .cta-trust-dot {
-          width: 5px; height: 5px; border-radius: 50%;
-          background: rgba(255,255,255,0.40);
-          flex-shrink: 0;
-        }
+        .cta-trust-dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,0.40); flex-shrink: 0; }
 
         @media (max-width: 560px) {
-          .cta-section { padding: 48px 5vw; }
-          .cta-image-wrap { width: 70%; opacity: 0.6; }
+          .cta-section { padding: 48px 5vw 0; }
+          .cta-image-wrap,
+          .cta-image-wrap-left { width: 70%; opacity: 0.6; }
           .cta-banner { min-height: 320px; }
         }
       `}</style>
 
       <section className="cta-section">
-        <div
-          ref={ref}
-          className={`cta-banner${inView ? " cta-banner-in" : ""}`}
-        >
-          {/* ── Background image (right side, fading) ── */}
-          <div className="cta-image-wrap">
-            <img
-              src="/images/img-6.jpg"
-              alt=""
-              className="cta-image"
-              aria-hidden="true"
-              draggable={false}
-            />
+        <div ref={ref} className={`cta-banner${inView ? " cta-banner-in" : ""}`}>
+
+          {/* ── Left image ── */}
+          <div className="cta-image-wrap-left">
+            <img src="/images/img-6.jpg" alt="" className="cta-image-left" aria-hidden="true" draggable={false} />
           </div>
 
-          {/* ── Overlay gradients ── */}
+          {/* ── Right image ── */}
+          <div className="cta-image-wrap">
+            <img src="/images/img-6.jpg" alt="" className="cta-image" aria-hidden="true" draggable={false} />
+          </div>
+
           <div className="cta-overlay" />
           <div className="cta-bottom-grad" />
-
-          {/* ── Decorative blobs ── */}
           <div className="cta-blob-1" />
           <div className="cta-blob-2" />
 
-          {/* ── Content ── */}
           <div className="cta-content">
             <p className="cta-eyebrow">Ready to get started?</p>
 
@@ -384,7 +366,7 @@ export default function CTABanner() {
               {inView && (
                 <>
                   <ShuffleText
-                    key={`cta-h1-${inView}`}
+                    key={`cta-h1-${headingKey}`}
                     text="Ready for a"
                     tag="span"
                     className="cta-heading-line"
@@ -398,7 +380,7 @@ export default function CTABanner() {
                     threshold={0}
                   />
                   <ShuffleText
-                    key={`cta-h2-${inView}`}
+                    key={`cta-h2-${headingKey}`}
                     text="simpler journey?"
                     tag="span"
                     className="cta-heading-line cta-heading-coral"
@@ -421,18 +403,12 @@ export default function CTABanner() {
             </p>
 
             <div className="cta-btn-row">
-              <AnimatedButton
+              <FillButton
                 label="View plans →"
                 bg={B.white}
-                layers={["rgba(255,255,255,0.85)", "rgba(255,255,255,0.70)", B.white]}
-                variant="fill"
+                layers={["rgba(240,240,240,0.9)", "rgba(220,220,220,0.7)", B.white]}
               />
-              <AnimatedButton
-                label="Advisor & experts"
-                bg="transparent"
-                layers={["transparent", "transparent", "transparent"]}
-                variant="ghost"
-              />
+              <GhostButton label="Advisor & experts" />
             </div>
 
             <div className="cta-trust">

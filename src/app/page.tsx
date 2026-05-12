@@ -6,6 +6,7 @@ import FloatingNavbar from "@/component/FloatingNavbar";
 import Footer from "@/component/Footer";
 import HeroCarousel from "@/component/Herocarousel";
 import QuoteCompare from "@/component/Quotecompare";
+import TestimonialsSection from "@/component/TestimonialsSection";
 import Image from "next/image";
 
 export default function Home() {
@@ -18,6 +19,7 @@ export default function Home() {
     <AboutSection/>
     <CoverageSection/>
     <FindInsuranceSection/>
+    <TestimonialsSection/>
 
 <CTABanner/>
 

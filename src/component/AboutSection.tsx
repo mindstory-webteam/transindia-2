@@ -67,9 +67,17 @@ function useInView(threshold = 0.15) {
 }
 
 // ─── Heading using ShuffleText ────────────────────────────────────────────────
+// Replace the AnimatedHeading component and the eyebrow paragraph with this:
+
 function AnimatedHeading({ inView, headingKey }) {
   return (
     <div className="ab-heading-wrap">
+      {/* Eyebrow line — dash + label */}
+      <div className="ab-eyebrow-inline">
+        <span className="ab-eyebrow-dash" />
+        <span className="ab-eyebrow-text">About TransIndia</span>
+      </div>
+
       {inView && (
         <>
           <ShuffleText
@@ -254,6 +262,32 @@ export default function AboutSection() {
           padding: 4px 0 16px;
           overflow: visible;
         }
+
+
+
+        /* ── Eyebrow — dash + small caps label (matches screenshot style) ── */
+.ab-eyebrow-inline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.ab-eyebrow-dash {
+  display: block;
+  width: 32px;
+  height: 2px;
+  background: #2DBFBF;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.ab-eyebrow-text {
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #2DBFBF;
+}
         .ab-heading-line {
           display: block;
           font-family: 'Outfit', sans-serif !important;
@@ -483,7 +517,7 @@ export default function AboutSection() {
         @keyframes abFadeUp { to { opacity: 1; transform: translateY(0); } }
 
         .ab-stat-val {
-          font-family: 'Playfair Display', serif;
+         font-family: 'Outfit', sans-serif;
           font-size: clamp(28px, 3.5vw, 46px);
           font-weight: 800;
           color: ${B.charcoal};
@@ -501,7 +535,7 @@ export default function AboutSection() {
 
           {/* ── LEFT COLUMN ── */}
           <div ref={leftRef} className="ab-left-col">
-            <p className="ab-eyebrow">About TransIndia</p>
+            {/* <p className="ab-eyebrow">About TransIndia</p> */}
 
             <AnimatedHeading inView={leftIn} headingKey={headingKey} />
 

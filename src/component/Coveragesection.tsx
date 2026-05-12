@@ -22,6 +22,7 @@ const CARDS = [
     desc: "Cashless treatment at 10,000+ hospitals nationwide with instant claim processing.",
     accent: B.coral,
     iconBg: "linear-gradient(145deg,#fdf0ee 0%,#faddd9 100%)",
+    image: "https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?w=900&q=80",
     icon: (color: string) => (
       <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
         <path d="M13 3C13 3 5.5 7 5.5 13.5C5.5 17.366 8.634 20.5 12.5 20.5H13.5C17.366 20.5 20.5 17.366 20.5 13.5C20.5 7 13 3 13 3Z" stroke={color} strokeWidth="1.8" strokeLinejoin="round"/>
@@ -31,25 +32,27 @@ const CARDS = [
     featured: false,
   },
   {
-    id: "life",
-    label: "Life Insurance",
-    desc: "Ensure your family's standard of living is maintained even in your absence.",
-    accent: B.white,
-    iconBg: "rgba(255,255,255,0.18)",
-    icon: (color: string) => (
-      <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
-        <path d="M13 4L7 8.5V13.5C7 17.09 9.686 20.4 13 21C16.314 20.4 19 17.09 19 13.5V8.5L13 4Z" stroke={color} strokeWidth="1.8" strokeLinejoin="round"/>
-        <path d="M10 13L12 15L16 11" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-      </svg>
-    ),
-    featured: true,
-  },
+  id: "life",
+  label: "Life Insurance",
+  desc: "Ensure your family's standard of living is maintained even in your absence.",
+  accent: "#2DBFBF",                                          // teal accent instead of white
+  iconBg: "linear-gradient(145deg,#eef9f9 0%,#d4f2f2 100%)", // soft teal bg like corporate
+  image: "https://images.unsplash.com/photo-1511895426328-dc8714191011?w=900&q=80",
+  icon: (color: string) => (
+    <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+      <path d="M13 4L7 8.5V13.5C7 17.09 9.686 20.4 13 21C16.314 20.4 19 17.09 19 13.5V8.5L13 4Z" stroke={color} strokeWidth="1.8" strokeLinejoin="round"/>
+      <path d="M10 13L12 15L16 11" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  ),
+  featured: false,   // ← key change
+},
   {
     id: "motor",
     label: "Motor Insurance",
     desc: "Comprehensive protection for your vehicle with 24/7 roadside assistance.",
     accent: "#F9A85D",
     iconBg: "linear-gradient(145deg,#fff8f0 0%,#fdecd6 100%)",
+    image: "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=900&q=80",
     icon: (color: string) => (
       <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
         <rect x="3" y="9" width="20" height="10" rx="3" stroke={color} strokeWidth="1.8"/>
@@ -66,6 +69,7 @@ const CARDS = [
     desc: "Travel the world without worries. Coverage for medical emergencies and cancellations.",
     accent: "#7C6EF5",
     iconBg: "linear-gradient(145deg,#f3f0ff 0%,#e4deff 100%)",
+    image: "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=900&q=80",
     icon: (color: string) => (
       <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
         <path d="M4 18L22 18" stroke={color} strokeWidth="1.8" strokeLinecap="round"/>
@@ -81,6 +85,7 @@ const CARDS = [
     desc: "Tailored risk management and employee benefits for your business.",
     accent: B.teal,
     iconBg: "linear-gradient(145deg,#eef9f9 0%,#d4f2f2 100%)",
+    image: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=900&q=80",
     icon: (color: string) => (
       <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
         <rect x="4" y="10" width="18" height="12" rx="2" stroke={color} strokeWidth="1.8"/>
@@ -92,6 +97,8 @@ const CARDS = [
     featured: false,
   },
 ];
+
+const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1519689680058-324335c77eba?w=900&q=80";
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 function useInView(threshold = 0.1) {
@@ -149,8 +156,12 @@ function GhostButton({ label }: { label: string }) {
 }
 
 // ─── Card ─────────────────────────────────────────────────────────────────────
-function CoverageCard({ card, index, inView }: {
-  card: typeof CARDS[0]; index: number; inView: boolean;
+function CoverageCard({ card, index, inView, onHover, onLeave }: {
+  card: typeof CARDS[0];
+  index: number;
+  inView: boolean;
+  onHover: (image: string) => void;
+  onLeave: () => void;
 }) {
   const [hovered, setHovered] = useState(false);
 
@@ -163,25 +174,52 @@ function CoverageCard({ card, index, inView }: {
         background:      card.featured ? B.teal : B.white,
         animationDelay:  inView ? `${index * 0.08}s` : "0s",
       } as React.CSSProperties}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseEnter={() => { setHovered(true); onHover(card.image); }}
+      onMouseLeave={() => { setHovered(false); onLeave(); }}
     >
       <div className={`cv-shimmer${hovered ? " cv-shimmer-on" : ""}`} />
-
       <div className="cv-card-icon" style={{ background: card.iconBg }}>
         {card.icon(card.featured ? B.white : card.accent)}
       </div>
-
       <p className="cv-card-title">{card.label}</p>
       <p className="cv-card-desc">{card.desc}</p>
-
       <div className="cv-card-arrow">
         <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
           <path d="M2 6.5H11M7.5 3L11 6.5L7.5 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       </div>
-
       <div className="cv-card-bar" />
+    </div>
+  );
+}
+
+// ─── Image Cell ───────────────────────────────────────────────────────────────
+function ImageCell({ activeImage, inView }: { activeImage: string; inView: boolean }) {
+  const [displayed, setDisplayed] = useState(activeImage);
+  const [next, setNext]           = useState(activeImage);
+  const [fading, setFading]       = useState(false);
+
+  useEffect(() => {
+    if (activeImage === displayed) return;
+    setNext(activeImage);
+    setFading(true);
+    const t = setTimeout(() => { setDisplayed(activeImage); setFading(false); }, 420);
+    return () => clearTimeout(t);
+  }, [activeImage]);
+
+  return (
+    <div className={`cv-img-cell${inView ? " cv-card-in" : ""}`}
+      style={{ animationDelay: inView ? "0.08s" : "0s" }}>
+      {/* base layer */}
+      <img src={displayed} alt="Insurance" className="cv-img-base" />
+      {/* fade-in layer */}
+      <img
+        src={next}
+        alt=""
+        className={`cv-img-next${fading ? " cv-img-next-in" : ""}`}
+        aria-hidden="true"
+      />
+      {/* label overlay */}
     </div>
   );
 }
@@ -190,9 +228,13 @@ function CoverageCard({ card, index, inView }: {
 export default function CoverageSection() {
   const { ref: headRef, inView: headIn } = useInView(0.1);
   const { ref: gridRef, inView: gridIn } = useInView(0.07);
-  const [headingKey, setHeadingKey] = useState(0);
+  const [headingKey, setHeadingKey]      = useState(0);
+  const [activeImage, setActiveImage]    = useState(DEFAULT_IMAGE);
 
   useEffect(() => { if (headIn) setHeadingKey((k) => k + 1); }, [headIn]);
+
+  const handleHover  = (img: string) => setActiveImage(img);
+  const handleLeave  = ()            => setActiveImage(DEFAULT_IMAGE);
 
   return (
     <>
@@ -233,7 +275,6 @@ export default function CoverageSection() {
           background: ${B.teal}; border-radius: 999px;
         }
 
-        /* heading — Outfit 800, matches codebase */
         .cv-heading-wrap { padding: 2px 0 10px; overflow: visible; }
         .cv-heading-line {
           display: block;
@@ -262,7 +303,7 @@ export default function CoverageSection() {
           .cv-header-right { padding-bottom: 0; }
         }
 
-        /* GRID — explicit row heights so row 1 is fixed, row 2 is content-sized */
+        /* GRID */
         .cv-grid {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
@@ -271,10 +312,7 @@ export default function CoverageSection() {
           position: relative; z-index: 1;
         }
         @media (max-width: 860px) {
-          .cv-grid {
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: auto;
-          }
+          .cv-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
           .cv-img-cell { display: none; }
         }
         @media (max-width: 520px) {
@@ -286,15 +324,31 @@ export default function CoverageSection() {
           border-radius: 20px; overflow: hidden;
           border: 1.5px solid ${B.border};
           opacity: 0; transform: translateY(20px);
+          position: relative;
         }
         .cv-img-cell.cv-card-in {
           animation: cvIn 0.55s cubic-bezier(0.22,1,0.36,1) both;
         }
-        .cv-img-cell img {
+
+        /* base image — always visible */
+        .cv-img-base {
+          position: absolute; inset: 0;
           width: 100%; height: 100%;
           object-fit: cover; object-position: center 20%;
           display: block;
         }
+
+        /* next image — fades in on top */
+        .cv-img-next {
+          position: absolute; inset: 0;
+          width: 100%; height: 100%;
+          object-fit: cover; object-position: center 20%;
+          display: block;
+          opacity: 0;
+          transition: opacity 0.42s cubic-bezier(0.4, 0, 0.2, 1);
+          z-index: 1;
+        }
+        .cv-img-next-in { opacity: 1; }
 
         /* CARD */
         .cv-card {
@@ -305,7 +359,6 @@ export default function CoverageSection() {
           gap: 10px;
           position: relative; overflow: hidden; cursor: pointer;
           opacity: 0; transform: translateY(20px);
-          /* No min-height — row height from grid controls it */
           transition:
             transform .38s cubic-bezier(0.22,1,0.36,1),
             box-shadow .38s ease,
@@ -322,7 +375,6 @@ export default function CoverageSection() {
         .cv-card-feat { border-color: ${B.teal} !important; }
         .cv-card-feat:hover { box-shadow: 0 14px 44px rgba(45,191,191,.28) !important; }
 
-        /* shimmer */
         .cv-shimmer {
           position: absolute; inset: 0; pointer-events: none; z-index: 1;
           background: linear-gradient(135deg,rgba(255,255,255,0) 30%,rgba(255,255,255,.45) 50%,rgba(255,255,255,0) 70%);
@@ -331,7 +383,6 @@ export default function CoverageSection() {
         }
         .cv-shimmer-on { background-position: 200% 200%; }
 
-        /* icon */
         .cv-card-icon {
           width: 44px; height: 44px; border-radius: 13px;
           display: flex; align-items: center; justify-content: center;
@@ -343,8 +394,7 @@ export default function CoverageSection() {
         .cv-card-title {
           font-family: 'Outfit', sans-serif; font-size: 15.5px; font-weight: 700;
           color: ${B.charcoal}; line-height: 1.25; margin: 0;
-          position: relative; z-index: 2;
-          transition: color .2s;
+          position: relative; z-index: 2; transition: color .2s;
         }
         .cv-card-feat .cv-card-title { color: ${B.white}; }
         .cv-card:not(.cv-card-feat):hover .cv-card-title { color: var(--card-accent); }
@@ -366,7 +416,6 @@ export default function CoverageSection() {
         .cv-card-feat .cv-card-arrow { color: rgba(255,255,255,.6); }
         .cv-card-feat:hover .cv-card-arrow { color: ${B.white}; transform: translateX(4px); }
 
-        /* bottom accent bar */
         .cv-card-bar {
           position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
           width: 0; height: 2.5px; border-radius: 999px;
@@ -375,7 +424,7 @@ export default function CoverageSection() {
         }
         .cv-card:hover .cv-card-bar { width: 55%; }
 
-        /* BUTTONS — exact wave style from codebase */
+        /* BUTTONS */
         .cv-uv-btn {
           all: unset; position: relative; display: inline-flex;
           height: 50px; align-items: center; border-radius: 9999px; padding: 0 30px;
@@ -474,25 +523,17 @@ export default function CoverageSection() {
         {/* ── Grid ── */}
         <div ref={gridRef} className="cv-grid">
 
-          {/* Row 1 — content card + full image + featured teal card */}
-          <CoverageCard card={CARDS[0]} index={0} inView={gridIn} />
+          {/* Row 1 */}
+          <CoverageCard card={CARDS[0]} index={0} inView={gridIn} onHover={handleHover} onLeave={handleLeave} />
 
-          <div
-            className={`cv-img-cell${gridIn ? " cv-card-in" : ""}`}
-            style={{ animationDelay: gridIn ? "0.08s" : "0s" }}
-          >
-            <img
-              src="https://images.unsplash.com/photo-1519689680058-324335c77eba?w=900&q=80"
-              alt="Happy family"
-            />
-          </div>
+          <ImageCell activeImage={activeImage} inView={gridIn} />
 
-          <CoverageCard card={CARDS[1]} index={2} inView={gridIn} />
+          <CoverageCard card={CARDS[1]} index={2} inView={gridIn} onHover={handleHover} onLeave={handleLeave} />
 
-          {/* Row 2 — three equal cards */}
-          <CoverageCard card={CARDS[2]} index={3} inView={gridIn} />
-          <CoverageCard card={CARDS[3]} index={4} inView={gridIn} />
-          <CoverageCard card={CARDS[4]} index={5} inView={gridIn} />
+          {/* Row 2 */}
+          <CoverageCard card={CARDS[2]} index={3} inView={gridIn} onHover={handleHover} onLeave={handleLeave} />
+          <CoverageCard card={CARDS[3]} index={4} inView={gridIn} onHover={handleHover} onLeave={handleLeave} />
+          <CoverageCard card={CARDS[4]} index={5} inView={gridIn} onHover={handleHover} onLeave={handleLeave} />
 
         </div>
       </section>
