@@ -171,7 +171,7 @@ function RightImage() {
       className={`ab-right-img${inView ? " ab-right-img-in" : ""}`}
     >
       <img
-        src="https://images.unsplash.com/photo-1578357078586-491adf1aa5ba?w=1200&q=85"
+        src="/images/img-5.webp"
         alt="Happy Indian family protected by insurance"
         className="ab-right-photo"
       />
