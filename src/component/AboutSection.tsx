@@ -69,7 +69,8 @@ function useInView(threshold = 0.15) {
 // ─── Heading using ShuffleText ────────────────────────────────────────────────
 // Replace the AnimatedHeading component and the eyebrow paragraph with this:
 
-function AnimatedHeading({ inView, headingKey }) {
+function AnimatedHeading({ inView, headingKey }: { inView: boolean; headingKey: string | number }) {
+
   return (
     <div className="ab-heading-wrap">
       {/* Eyebrow line — dash + label */}
