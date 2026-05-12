@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useEffect, useState, useCallback } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import ShuffleText from "./Shuffletext";
 
@@ -15,18 +15,18 @@ const B = {
   border:   "rgba(0,0,0,0.07)",
 };
 
-// ─── GIF Map ──────────────────────────────────────────────────────────────────
-const GIF_MAP: Record<string, string> = {
-  bike:       "/icon-gif/Bike.gif",
-  car:        "/icon-gif/Car moving.gif",
-  health:     "/icon-gif/Insurance.gif",
-  term:       "/icon-gif/term.gif",
-  investment: "/icon-gif/Invest.gif",
-  child:      "/icon-gif/child.gif",
-  pension:    "/icon-gif/insurance (1).gif",
-  travel:     "/icon-gif/travel.gif",
-  home:       "/icon-gif/home.gif",
-  business:   "/icon-gif/business.gif",
+// ─── Image Map (replace with your actual image paths) ─────────────────────────
+const IMG_MAP: Record<string, string> = {
+  bike:       "/icon-img/bike.png",
+  car:        "/icon-img/car.png",
+  health:     "/icon-img/health.png",
+  term:       "/icon-img/term.png",
+  investment: "/icon-img/investment.png",
+  child:      "/icon-img/child.png",
+  pension:    "/icon-img/pension.png",
+  travel:     "/icon-img/travel.png",
+  home:       "/icon-img/home.png",
+  business:   "/icon-img/business.png",
 };
 
 // ─── Categories ───────────────────────────────────────────────────────────────
@@ -43,13 +43,12 @@ const CATEGORIES = [
   { id:"business",   label:"Business",    sublabel:"Cover",        accent:B.charcoal,  bg:"linear-gradient(145deg,#f2f2f2 0%,#e2e2e2 100%)" },
 ];
 
-// ─── Intersection hook ────────────────────────────────────────────────────────
+// ─── Hook ─────────────────────────────────────────────────────────────────────
 function useInView(threshold = 0.15) {
   const ref = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(false);
   useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
+    const el = ref.current; if (!el) return;
     const obs = new IntersectionObserver(
       ([e]) => { if (e.isIntersecting) { setInView(true); obs.disconnect(); } },
       { threshold }
@@ -99,104 +98,60 @@ function GhostButton({ label }: { label: string }) {
   );
 }
 
-// ─── Category Card ────────────────────────────────────────────────────────────
-function CategoryCard({ cat, index, inView }: {
+// ─── Pill Card ────────────────────────────────────────────────────────────────
+function PillCard({ cat, index, inView }: {
   cat: typeof CATEGORIES[0]; index: number; inView: boolean;
 }) {
   const [hovered, setHovered] = useState(false);
   const router = useRouter();
-  const gifSrc = GIF_MAP[cat.id];
-
-  const handleClick = () => {
-    router.push(`/insurance/${cat.id}`);
-  };
+  const imgSrc = IMG_MAP[cat.id];
 
   return (
     <div
-      className={`qc-card${inView ? " qc-card-in" : ""}`}
+      className={`qc-pill${inView ? " qc-pill-in" : ""}`}
       style={{
-        animationDelay: inView ? `${index * 0.07}s` : "0s",
-        "--card-accent": cat.accent,
+        "--pill-accent": cat.accent,
+        "--pill-bg":     cat.bg,
+        animationDelay:  inView ? `${index * 0.055}s` : "0s",
       } as React.CSSProperties}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      onClick={handleClick}
+      onClick={() => router.push(`/insurance/${cat.id}`)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => e.key === "Enter" && router.push(`/insurance/${cat.id}`)}
     >
-      <div className="qc-icon-wrap" style={{ background: cat.bg }}>
-        <div className={`qc-icon-shimmer${hovered ? " qc-icon-shimmer-in" : ""}`} />
-        {gifSrc && (
-          <img
-            src={gifSrc}
-            alt={cat.label}
-            className="qc-icon-img"
-            draggable={false}
-          />
+      {/* coloured icon swatch */}
+      <div className="qc-pill-icon" style={{ background: cat.bg }}>
+        <div className={`qc-pill-shimmer${hovered ? " qc-pill-shimmer-in" : ""}`} />
+        {imgSrc && (
+          <img src={imgSrc} alt={cat.label} className="qc-pill-img" draggable={false} />
         )}
-        <span className="qc-icon-dot" style={{ background: cat.accent }} />
       </div>
-      <div className="qc-label-wrap">
-        <span className="qc-label-top">{cat.label}</span>
-        <span className="qc-label-sub">{cat.sublabel}</span>
+
+      {/* text */}
+      <div className="qc-pill-text">
+        <span className="qc-pill-label">{cat.label}</span>
+        <span className="qc-pill-sub">{cat.sublabel}</span>
       </div>
-      <div className="qc-card-line" style={{ background: cat.accent }} />
+
+      {/* tiny arrow that appears on hover */}
+      <span className="qc-pill-arrow" aria-hidden="true">
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+          <path d="M2 5.5H9M6.5 3L9 5.5L6.5 8" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </span>
     </div>
   );
 }
 
-// ─── Card Track ───────────────────────────────────────────────────────────────
-function CardTrack({ inView }: { inView: boolean }) {
-  const trackRef = useRef<HTMLDivElement>(null);
-  const [canLeft,  setCanLeft]  = useState(false);
-  const [canRight, setCanRight] = useState(true);
-
-  const checkScroll = useCallback(() => {
-    const el = trackRef.current;
-    if (!el) return;
-    setCanLeft(el.scrollLeft > 4);
-    setCanRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
-  }, []);
-
-  useEffect(() => {
-    const el = trackRef.current;
-    if (!el) return;
-    checkScroll();
-    el.addEventListener("scroll", checkScroll, { passive: true });
-    window.addEventListener("resize", checkScroll);
-    return () => {
-      el.removeEventListener("scroll", checkScroll);
-      window.removeEventListener("resize", checkScroll);
-    };
-  }, [checkScroll]);
-
-  const scroll = (dir: "left" | "right") => {
-    trackRef.current?.scrollBy({ left: dir === "left" ? -280 : 280, behavior: "smooth" });
-  };
-
+// ─── Pill Grid (5 per row) ────────────────────────────────────────────────────
+function PillGrid({ inView }: { inView: boolean }) {
   return (
-    <div className="qc-track-outer">
-      <button
-        className={`qc-arrow qc-arrow-left${canLeft ? " qc-arrow-visible" : ""}`}
-        onClick={() => scroll("left")}
-        aria-label="Scroll left"
-      >
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-          <path d="M13 4L7 10L13 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-      </button>
-      <div ref={trackRef} className="qc-track">
-        {CATEGORIES.map((cat, i) => (
-          <CategoryCard key={cat.id} cat={cat} index={i} inView={inView} />
-        ))}
-      </div>
-      <button
-        className={`qc-arrow qc-arrow-right${canRight ? " qc-arrow-visible" : ""}`}
-        onClick={() => scroll("right")}
-        aria-label="Scroll right"
-      >
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-          <path d="M7 4L13 10L7 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-      </button>
+    <div className="qc-pill-grid">
+      {CATEGORIES.map((cat, i) => (
+        <PillCard key={cat.id} cat={cat} index={i} inView={inView} />
+      ))}
     </div>
   );
 }
@@ -213,247 +168,259 @@ export default function QuoteCompare() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700;1,800&family=Outfit:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
         *, *::before, *::after { box-sizing: border-box; }
 
+        /* ══ ROOT ══════════════════════════════════════════════════════ */
         .qc-root {
           font-family: 'Outfit', sans-serif;
           background: ${B.white};
           width: 100%; overflow: hidden;
-          padding: 96px 0 80px;
+          padding: 96px 0 88px;
           position: relative;
         }
         .qc-root::before {
-          content:''; position:absolute; top:-60px; right:-80px;
-          width:520px; height:520px; border-radius:50%;
-          background:radial-gradient(circle,rgba(45,191,191,0.07) 0%,transparent 70%);
-          pointer-events:none; z-index:0;
+          content: ''; position: absolute; top: -60px; right: -80px;
+          width: 520px; height: 520px; border-radius: 50%;
+          background: radial-gradient(circle, rgba(45,191,191,0.07) 0%, transparent 70%);
+          pointer-events: none; z-index: 0;
         }
         .qc-root::after {
-          content:''; position:absolute; bottom:-40px; left:-60px;
-          width:360px; height:360px; border-radius:50%;
-          background:radial-gradient(circle,rgba(232,80,58,0.05) 0%,transparent 70%);
-          pointer-events:none; z-index:0;
+          content: ''; position: absolute; bottom: -40px; left: -60px;
+          width: 360px; height: 360px; border-radius: 50%;
+          background: radial-gradient(circle, rgba(232,80,58,0.05) 0%, transparent 70%);
+          pointer-events: none; z-index: 0;
         }
 
-        /* Header */
+        /* ══ HEADER ════════════════════════════════════════════════════ */
         .qc-header {
-          padding:0 9vw; margin-bottom:52px;
-          display:flex; align-items:flex-end; justify-content:space-between;
-          gap:32px; flex-wrap:wrap; position:relative; z-index:1;
+          padding: 0 9vw; margin-bottom: 48px;
+          display: flex; align-items: flex-end; justify-content: space-between;
+          gap: 32px; flex-wrap: wrap; position: relative; z-index: 1;
         }
         .qc-eyebrow {
-          display:inline-flex; align-items:center; gap:10px;
-          font-size:11px; font-weight:700; letter-spacing:.14em;
-          text-transform:uppercase; color:${B.teal}; margin-bottom:16px;
+          display: inline-flex; align-items: center; gap: 10px;
+          font-size: 11px; font-weight: 700; letter-spacing: .14em;
+          text-transform: uppercase; color: ${B.teal}; margin-bottom: 16px;
         }
         .qc-eyebrow::before {
-          content:''; display:block; width:28px; height:2px;
-          background:${B.teal}; border-radius:999px;
+          content: ''; display: block; width: 28px; height: 2px;
+          background: ${B.teal}; border-radius: 999px;
         }
-        .qc-heading-wrap { padding:2px 0 12px; overflow:visible; clip-path:none; }
+        .qc-heading-wrap { padding: 2px 0 12px; overflow: visible; clip-path: none; }
         .qc-heading-line {
-          display:block;
-          font-family:'Playfair Display',serif !important;
-          font-size:clamp(36px,4.4vw,60px) !important;
-          font-weight:800 !important; line-height:1.1 !important;
-          letter-spacing:-0.01em !important; color:${B.charcoal} !important;
-          overflow:visible !important; padding-bottom:6px !important;
+          display: block;
+          font-family: 'Outfit', sans-serif !important;
+          font-size: clamp(32px, 4.2vw, 58px) !important;
+          font-weight: 800 !important;
+          line-height: 1.10 !important;
+          letter-spacing: -0.025em !important;
+          color: ${B.charcoal} !important;
+          overflow: visible !important;
+          padding-bottom: 4px !important;
         }
-        .qc-heading-accent { color:${B.teal} !important; font-style:italic !important; }
-        .qc-header-right { display:flex; align-items:center; gap:12px; flex-shrink:0; padding-bottom:10px; }
-        @media(max-width:680px){
-          .qc-header{flex-direction:column;align-items:flex-start;}
-          .qc-header-right{padding-bottom:0;}
+        .qc-heading-accent { color: ${B.teal} !important; font-style: normal !important; }
+
+        .qc-header-right {
+          display: flex; align-items: center; gap: 12px;
+          flex-shrink: 0; padding-bottom: 10px;
+        }
+        @media (max-width: 680px) {
+          .qc-header { flex-direction: column; align-items: flex-start; }
+          .qc-header-right { padding-bottom: 0; }
         }
 
-        /* Track */
-        .qc-track-outer { position:relative; padding:0 9vw; }
-        .qc-track-outer::before,.qc-track-outer::after {
-          content:''; position:absolute; top:0; bottom:0; width:80px; z-index:2; pointer-events:none;
-        }
-        .qc-track-outer::before { left:0; background:linear-gradient(to right,${B.white},transparent); }
-        .qc-track-outer::after  { right:0; background:linear-gradient(to left,${B.white},transparent); }
-        .qc-track {
-          display:flex; gap:18px;
-          overflow-x:auto; scroll-snap-type:x mandatory;
-          -webkit-overflow-scrolling:touch;
-          padding:12px 4px 28px; scrollbar-width:none;
-        }
-        .qc-track::-webkit-scrollbar { display:none; }
-
-        /* Arrows */
-        .qc-arrow {
-          all:unset; position:absolute; top:50%; transform:translateY(-50%);
-          width:42px; height:42px; border-radius:50%;
-          background:${B.white}; border:1px solid ${B.border};
-          box-shadow:0 4px 20px rgba(0,0,0,.10);
-          display:flex; align-items:center; justify-content:center;
-          color:${B.charcoal}; cursor:pointer; z-index:10;
-          opacity:0; pointer-events:none;
-          transition:opacity .3s ease, transform .3s ease, box-shadow .3s ease, background .3s ease, color .3s;
-        }
-        .qc-arrow-visible { opacity:1; pointer-events:auto; }
-        .qc-arrow-left  { left:calc(9vw - 21px); }
-        .qc-arrow-right { right:calc(9vw - 21px); }
-        .qc-arrow:hover {
-          background:${B.teal}; color:#fff; border-color:${B.teal};
-          box-shadow:0 6px 24px rgba(45,191,191,.30);
-          transform:translateY(-50%) scale(1.08);
+        /* ══ PILL GRID — 5 columns ═════════════════════════════════════ */
+        .qc-pill-grid {
+          padding: 0 9vw;
+          display: grid;
+          grid-template-columns: repeat(5, 1fr);
+          gap: 12px;
+          position: relative; z-index: 1;
         }
 
-        /* Card */
-        .qc-card {
-          flex:0 0 auto; width:140px;
-          display:flex; flex-direction:column; align-items:center; gap:14px;
-          scroll-snap-align:start; cursor:pointer;
-          opacity:0; transform:translateY(24px);
-          position:relative;
+        /* Responsive: 2 columns on mobile */
+        @media (max-width: 900px) {
+          .qc-pill-grid {
+            grid-template-columns: repeat(3, 1fr);
+          }
         }
-        .qc-card-in { animation:qcCardIn 0.55s cubic-bezier(0.22,1,0.36,1) both; }
-        @keyframes qcCardIn { to { opacity:1; transform:translateY(0); } }
-
-        /* Hover lift on the whole card */
-        .qc-card:hover { transform:translateY(-4px); }
-        .qc-card-in:hover { animation:none; opacity:1; transform:translateY(-4px); }
-
-        /* Icon bubble */
-        .qc-icon-wrap {
-          width:128px; height:128px; border-radius:28px;
-          position:relative; display:flex; align-items:center; justify-content:center;
-          border:1.5px solid rgba(0,0,0,0.06);
-          box-shadow:0 4px 16px rgba(0,0,0,.06), inset 0 1px 0 rgba(255,255,255,.8);
-          overflow:hidden;
-          transition:transform .45s cubic-bezier(0.22,1,0.36,1), box-shadow .45s ease;
-        }
-        .qc-card:hover .qc-icon-wrap {
-          transform:translateY(-6px) scale(1.04);
-          box-shadow:0 16px 40px rgba(0,0,0,.12), 0 4px 12px var(--card-accent,${B.teal})44, inset 0 1px 0 rgba(255,255,255,.8);
+        @media (max-width: 560px) {
+          .qc-pill-grid {
+            grid-template-columns: repeat(2, 1fr);
+            padding: 0 5vw;
+          }
         }
 
-        /* Shimmer */
-        .qc-icon-shimmer {
-          position:absolute; inset:0;
-          background:linear-gradient(135deg, rgba(255,255,255,0) 30%, rgba(255,255,255,.55) 50%, rgba(255,255,255,0) 70%);
-          background-size:200% 200%; background-position:-100% -100%;
-          transition:background-position .6s ease;
-          pointer-events:none; z-index:1; border-radius:28px;
+        /* ══ PILL CARD ═════════════════════════════════════════════════ */
+        .qc-pill {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 10px;
+          padding: 10px 14px 10px 10px;
+          border-radius: 16px;
+          border: 1.5px solid rgba(0,0,0,0.07);
+          background: ${B.white};
+          cursor: pointer;
+          user-select: none;
+          position: relative;
+          overflow: hidden;
+          opacity: 0;
+          transform: translateY(14px) scale(0.97);
+          transition:
+            transform .32s cubic-bezier(0.22,1,0.36,1),
+            box-shadow .32s ease,
+            border-color .22s ease,
+            background .22s ease;
         }
-        .qc-icon-shimmer-in { background-position:200% 200%; }
+        .qc-pill-in {
+          animation: qcPillIn 0.5s cubic-bezier(0.22,1,0.36,1) both;
+        }
+        @keyframes qcPillIn {
+          to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .qc-pill:hover {
+          border-color: var(--pill-accent);
+          background: var(--pill-bg);
+          box-shadow:
+            0 6px 24px rgba(0,0,0,.07),
+            0 2px 8px rgba(0,0,0,0.04);
+          transform: translateY(-2px) scale(1.02);
+        }
+        .qc-pill:active { transform: scale(0.98); }
+        .qc-pill:focus-visible {
+          outline: 2px solid var(--pill-accent);
+          outline-offset: 2px;
+        }
 
-        /* GIF image */
-        .qc-icon-img {
-          width:80px; height:80px;
-          object-fit:contain;
-          position:relative; z-index:2;
-          display:block;
-          image-rendering:auto;
+        /* icon swatch */
+        .qc-pill-icon {
+          width: 44px; height: 44px;
+          border-radius: 12px;
+          flex-shrink: 0;
+          display: flex; align-items: center; justify-content: center;
+          position: relative; overflow: hidden;
+          border: 1px solid rgba(0,0,0,0.05);
+          transition: transform .35s cubic-bezier(0.22,1,0.36,1);
+        }
+        .qc-pill:hover .qc-pill-icon {
+          transform: scale(1.08) rotate(-2deg);
+        }
+        .qc-pill-shimmer {
+          position: absolute; inset: 0;
+          background: linear-gradient(135deg, rgba(255,255,255,0) 30%, rgba(255,255,255,.6) 50%, rgba(255,255,255,0) 70%);
+          background-size: 200% 200%; background-position: -100% -100%;
+          transition: background-position .55s ease;
+          pointer-events: none; z-index: 1;
+        }
+        .qc-pill-shimmer-in { background-position: 200% 200%; }
+        .qc-pill-img {
+          width: 28px; height: 28px;
+          object-fit: contain;
+          position: relative; z-index: 2;
+          display: block;
         }
 
-        /* Accent dot */
-        .qc-icon-dot {
-          position:absolute; top:12px; right:12px;
-          width:8px; height:8px; border-radius:50%;
-          opacity:0; transform:scale(0);
-          transition:opacity .3s ease, transform .3s ease; z-index:3;
+        /* text */
+        .qc-pill-text {
+          display: flex; flex-direction: column; gap: 1px;
+          position: relative; z-index: 2;
+          min-width: 0;
         }
-        .qc-card:hover .qc-icon-dot { opacity:1; transform:scale(1); }
+        .qc-pill-label {
+          font-family: 'Outfit', sans-serif;
+          font-size: 13px; font-weight: 700;
+          color: ${B.charcoal}; line-height: 1.2;
+          transition: color .2s ease;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .qc-pill:hover .qc-pill-label { color: var(--pill-accent); }
 
-        /* Label */
-        .qc-label-wrap { display:flex; flex-direction:column; align-items:center; gap:1px; text-align:center; }
-        .qc-label-top {
-          font-family:'Outfit',sans-serif; font-size:14px; font-weight:600;
-          color:${B.charcoal}; line-height:1.3; transition:color .25s ease;
+        .qc-pill-sub {
+          font-family: 'Outfit', sans-serif;
+          font-size: 11px; font-weight: 400;
+          color: ${B.gray}; line-height: 1.2;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
-        .qc-label-sub {
-          font-family:'Outfit',sans-serif; font-size:13px; font-weight:400;
-          color:${B.gray}; line-height:1.3;
-        }
-        .qc-card:hover .qc-label-top { color:var(--card-accent,${B.teal}); }
 
-        /* Bottom accent line */
-        .qc-card-line {
-          position:absolute; bottom:-2px; left:50%; width:0; height:2px;
-          border-radius:999px; transform:translateX(-50%);
-          transition:width .4s cubic-bezier(0.77,0,0.175,1);
+        /* arrow — hidden until hover */
+        .qc-pill-arrow {
+          display: flex; align-items: center;
+          color: var(--pill-accent);
+          opacity: 0;
+          transform: translateX(-4px);
+          transition: opacity .22s ease, transform .3s cubic-bezier(0.22,1,0.36,1);
+          flex-shrink: 0;
+          margin-left: auto;
+          position: relative; z-index: 2;
         }
-        .qc-card:hover .qc-card-line { width:40px; }
+        .qc-pill:hover .qc-pill-arrow {
+          opacity: 1;
+          transform: translateX(0);
+        }
 
-        /* Buttons */
+        /* ══ BUTTONS ═══════════════════════════════════════════════════ */
         .qc-uv-btn {
-          all:unset; position:relative; display:inline-flex;
-          height:50px; align-items:center; border-radius:9999px; padding:0 30px;
-          font-family:'Outfit',sans-serif; font-size:14px; font-weight:600;
-          color:#fff; letter-spacing:.01em; cursor:pointer; user-select:none;
+          all: unset; position: relative; display: inline-flex;
+          height: 50px; align-items: center; border-radius: 9999px; padding: 0 30px;
+          font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 600;
+          color: #fff; letter-spacing: .01em; cursor: pointer; user-select: none;
         }
         .qc-uv-bg {
-          overflow:hidden; border-radius:9999px; position:absolute; inset:0;
-          background:var(--btn-bg); box-shadow:0 4px 20px rgba(0,0,0,.14);
-          transition:transform 1.8s cubic-bezier(0.19,1,0.22,1);
+          overflow: hidden; border-radius: 9999px; position: absolute; inset: 0;
+          background: var(--btn-bg); box-shadow: 0 4px 20px rgba(0,0,0,.14);
+          transition: transform 1.8s cubic-bezier(0.19,1,0.22,1);
         }
-        .qc-uv-btn:hover .qc-uv-bg { transform:scale(1.04); }
+        .qc-uv-btn:hover .qc-uv-bg { transform: scale(1.04); }
         .qc-uv-layers {
-          display:block; position:absolute; left:50%; top:-60%; transform:translate(-50%);
-          aspect-ratio:1/1; width:max(200%,10rem);
+          display: block; position: absolute; left: 50%; top: -60%; transform: translate(-50%);
+          aspect-ratio: 1/1; width: max(200%,10rem);
         }
         .qc-uv-layer {
-          display:block; border-radius:9999px; position:absolute; inset:0; transform:scale(0);
+          display: block; border-radius: 9999px; position: absolute; inset: 0; transform: scale(0);
         }
-        .qc-uv-btn:hover .qc-uv-layer { transition:transform 1.3s cubic-bezier(0.19,1,0.22,1),opacity .3s linear; }
-        .qc-uv-btn:hover .qc-uv-l1 { transform:scale(1); }
-        .qc-uv-btn:hover .qc-uv-l2 { transition-delay:.1s; transform:scale(1); }
-        .qc-uv-btn:hover .qc-uv-l3 { transition-delay:.2s; transform:scale(1); }
-        .qc-uv-inner { position:relative; display:block; pointer-events:none; }
-        .qc-uv-static,.qc-uv-hover { display:block; pointer-events:none; }
-        .qc-uv-hover { position:absolute; top:0; left:0; opacity:0; transform:translateY(70%); }
-        .qc-uv-btn:hover .qc-uv-static { opacity:0; transform:translateY(-70%); transition:transform 1.4s cubic-bezier(0.19,1,0.22,1),opacity .3s linear; }
-        .qc-uv-btn:hover .qc-uv-hover  { opacity:1; transform:translateY(0); transition:transform 1.4s cubic-bezier(0.19,1,0.22,1),opacity 1.4s cubic-bezier(0.19,1,0.22,1); }
+        .qc-uv-btn:hover .qc-uv-layer { transition: transform 1.3s cubic-bezier(0.19,1,0.22,1), opacity .3s linear; }
+        .qc-uv-btn:hover .qc-uv-l1 { transform: scale(1); }
+        .qc-uv-btn:hover .qc-uv-l2 { transition-delay: .1s; transform: scale(1); }
+        .qc-uv-btn:hover .qc-uv-l3 { transition-delay: .2s; transform: scale(1); }
+        .qc-uv-inner { position: relative; display: block; pointer-events: none; }
+        .qc-uv-static, .qc-uv-hover { display: block; pointer-events: none; }
+        .qc-uv-hover { position: absolute; top: 0; left: 0; opacity: 0; transform: translateY(70%); }
+        .qc-uv-btn:hover .qc-uv-static { opacity: 0; transform: translateY(-70%); transition: transform 1.4s cubic-bezier(0.19,1,0.22,1), opacity .3s linear; }
+        .qc-uv-btn:hover .qc-uv-hover  { opacity: 1; transform: translateY(0); transition: transform 1.4s cubic-bezier(0.19,1,0.22,1), opacity 1.4s cubic-bezier(0.19,1,0.22,1); }
 
         .qc-uv-ghost {
-          all:unset; position:relative; display:inline-flex;
-          height:50px; align-items:center; border-radius:9999px; padding:0 24px;
-          font-family:'Outfit',sans-serif; font-size:14px; font-weight:500;
-          color:${B.charcoal}; cursor:pointer; user-select:none;
+          all: unset; position: relative; display: inline-flex;
+          height: 50px; align-items: center; border-radius: 9999px; padding: 0 24px;
+          font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 500;
+          color: ${B.charcoal}; cursor: pointer; user-select: none;
         }
         .qc-uv-ghost-bg {
-          overflow:hidden; border-radius:9999px; position:absolute; inset:0;
-          background:transparent; border:1.5px solid rgba(26,26,26,.20);
-          transition:transform 1.8s cubic-bezier(0.19,1,0.22,1),border-color .3s;
+          overflow: hidden; border-radius: 9999px; position: absolute; inset: 0;
+          background: transparent; border: 1.5px solid rgba(26,26,26,.20);
+          transition: transform 1.8s cubic-bezier(0.19,1,0.22,1), border-color .3s;
         }
-        .qc-uv-ghost:hover .qc-uv-ghost-bg { transform:scale(1.04); border-color:${B.teal}; }
+        .qc-uv-ghost:hover .qc-uv-ghost-bg { transform: scale(1.04); border-color: ${B.teal}; }
         .qc-uv-ghost .qc-uv-layers {
-          display:block; position:absolute; left:50%; top:-60%; transform:translate(-50%);
-          aspect-ratio:1/1; width:max(200%,10rem);
+          display: block; position: absolute; left: 50%; top: -60%; transform: translate(-50%);
+          aspect-ratio: 1/1; width: max(200%,10rem);
         }
-        .qc-uv-ghost:hover .qc-uv-layer { transition:transform 1.3s cubic-bezier(0.19,1,0.22,1); }
-        .qc-uv-ghost:hover .qc-uv-l1 { transform:scale(1); }
-        .qc-uv-ghost:hover .qc-uv-l2 { transition-delay:.1s; transform:scale(1); }
-        .qc-uv-ghost:hover .qc-uv-l3 { transition-delay:.2s; transform:scale(1); }
-        .qc-uv-ghost:hover .qc-uv-static { opacity:0; transform:translateY(-70%); transition:transform 1.4s cubic-bezier(0.19,1,0.22,1),opacity .3s linear; }
-        .qc-uv-ghost:hover .qc-uv-hover  { opacity:1; transform:translateY(0); transition:transform 1.4s cubic-bezier(0.19,1,0.22,1),opacity 1.4s cubic-bezier(0.19,1,0.22,1); }
-
-        /* Bottom strip */
-        .qc-strip {
-          margin:48px 9vw 0; padding:20px 28px;
-          background:${B.offwhite}; border-radius:16px; border:1px solid ${B.border};
-          display:flex; align-items:center; justify-content:space-between; gap:24px; flex-wrap:wrap;
-          position:relative; z-index:1;
-        }
-        .qc-strip-left { display:flex; align-items:center; gap:12px; }
-        .qc-strip-icon { font-size:28px; line-height:1; flex-shrink:0; }
-        .qc-strip-title { display:block; font-size:15px; font-weight:600; color:${B.charcoal}; }
-        .qc-strip-sub   { display:block; font-size:13px; color:${B.gray}; margin-top:2px; }
-        .qc-strip-pills { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
-        .qc-strip-pill {
-          font-family:'Outfit',sans-serif; font-size:12px; font-weight:600;
-          padding:5px 14px; border-radius:999px;
-          background:${B.white}; border:1px solid ${B.border}; color:${B.charcoal}; letter-spacing:.03em;
-          transition:border-color .25s, color .25s, box-shadow .25s; cursor:pointer;
-        }
-        .qc-strip-pill:hover { border-color:${B.teal}; color:${B.teal}; box-shadow:0 0 0 3px rgba(45,191,191,.12); }
+        .qc-uv-ghost:hover .qc-uv-layer { transition: transform 1.3s cubic-bezier(0.19,1,0.22,1); }
+        .qc-uv-ghost:hover .qc-uv-l1 { transform: scale(1); }
+        .qc-uv-ghost:hover .qc-uv-l2 { transition-delay: .1s; transform: scale(1); }
+        .qc-uv-ghost:hover .qc-uv-l3 { transition-delay: .2s; transform: scale(1); }
+        .qc-uv-ghost:hover .qc-uv-static { opacity: 0; transform: translateY(-70%); transition: transform 1.4s cubic-bezier(0.19,1,0.22,1), opacity .3s linear; }
+        .qc-uv-ghost:hover .qc-uv-hover  { opacity: 1; transform: translateY(0); transition: transform 1.4s cubic-bezier(0.19,1,0.22,1), opacity 1.4s cubic-bezier(0.19,1,0.22,1); }
       `}</style>
 
       <section className="qc-root">
+
+        {/* ── Header ── */}
         <div ref={sectionRef} className="qc-header">
           <div>
             <p className="qc-eyebrow">Insurance Products</p>
@@ -463,51 +430,32 @@ export default function QuoteCompare() {
                   <ShuffleText
                     key={`qc-h1-${headingKey}`}
                     text="Get a quote or"
-                    tag="span"
-                    className="qc-heading-line"
-                    shuffleDirection="right"
-                    duration={0.48} stagger={0.032}
-                    animationMode="evenodd"
-                    triggerOnce={false} triggerOnHover={false}
-                    rootMargin="0px" threshold={0}
+                    tag="span" className="qc-heading-line"
+                    shuffleDirection="right" duration={0.48} stagger={0.032}
+                    animationMode="evenodd" triggerOnce={false}
+                    triggerOnHover={false} rootMargin="0px" threshold={0}
                   />
                   <ShuffleText
                     key={`qc-h2-${headingKey}`}
                     text="compare plans."
-                    tag="span"
-                    className="qc-heading-line qc-heading-accent"
-                    shuffleDirection="right"
-                    duration={0.48} stagger={0.032}
-                    animationMode="evenodd"
-                    triggerOnce={false} triggerOnHover={false}
-                    rootMargin="0px" threshold={0}
+                    tag="span" className="qc-heading-line qc-heading-accent"
+                    shuffleDirection="right" duration={0.48} stagger={0.032}
+                    animationMode="evenodd" triggerOnce={false}
+                    triggerOnHover={false} rootMargin="0px" threshold={0}
                   />
                 </>
               )}
             </div>
           </div>
           <div className="qc-header-right">
-            <AnimatedButton label="Get Free Quote →" bg={B.teal} layers={["#17f1d1","#a374ff",B.teal]}/>
-            <GhostButton label="Compare All"/>
+            <AnimatedButton label="Get Free Quote →" bg={B.teal} layers={["#17f1d1","#a374ff",B.teal]} />
+            <GhostButton label="Compare All" />
           </div>
         </div>
 
-        <CardTrack inView={inView}/>
+        {/* ── Pill Grid ── */}
+        <PillGrid inView={inView} />
 
-        <div className="qc-strip">
-          <div className="qc-strip-left">
-            <span className="qc-strip-icon">⚡</span>
-            <div>
-              <span className="qc-strip-title">Instant policy issuance</span>
-              <span className="qc-strip-sub">Get your policy document in under 5 minutes — no paperwork.</span>
-            </div>
-          </div>
-          <div className="qc-strip-pills">
-            {["Zero Hidden Fees","50+ Insurers","Expert Support 24/7","Cashless Claims"].map((t) => (
-              <span key={t} className="qc-strip-pill">{t}</span>
-            ))}
-          </div>
-        </div>
       </section>
     </>
   );

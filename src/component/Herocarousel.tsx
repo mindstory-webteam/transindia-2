@@ -285,7 +285,7 @@ export default function InsuranceBanner() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700;1,800&family=Outfit:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
         *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
 
@@ -361,24 +361,25 @@ export default function InsuranceBanner() {
           display:block; margin-bottom:24px; min-height:180px;
         }
 
-        /* ── Playfair Display headlines (ShuffleText renders these) ── */
+        /* ── HEADING STYLE: Bold Outfit sans-serif (matches AboutSection) ── */
         .ti-shuffle-line {
           display:block;
-          font-family:'Playfair Display',serif !important;
-          font-size:clamp(50px,6.8vw,94px) !important;
+          font-family:'Outfit', sans-serif !important;
+          font-size:clamp(48px, 6.8vw, 92px) !important;
           font-weight:800 !important;
-          line-height:1.07 !important;
-          letter-spacing:-0.01em !important;
-         
+          line-height:1.08 !important;
+          letter-spacing:-0.028em !important;
         }
         .ti-shuffle-white { color:#fff !important; }
+
+        /* accent line inherits color from inline style (slide.accentColor) */
+        .ti-shuffle-accent { font-style:normal !important; }
 
         .ti-sub {
           font-family:'Outfit',sans-serif;
           font-size:17px; font-weight:400;
           color:rgba(255,255,255,.78); line-height:1.75;
           margin-bottom:40px; max-width:520px;
-        
         }
 
         .ti-btns { display:flex; gap:14px; flex-wrap:wrap; align-items:center; }

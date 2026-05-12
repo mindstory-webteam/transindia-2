@@ -22,7 +22,7 @@ const NAV_LINKS = [
   { label: "Support",    accent: B.teal },
 ];
 
-// ─── Nav Link with ShuffleText ────────────────────────────────────────────────
+// ─── Nav Link — Outfit font, QuoteCompare pill style ─────────────────────────
 function NavLinkItem({
   link,
   active,
@@ -41,21 +41,24 @@ function NavLinkItem({
   };
   const handleMouseLeave = () => setIsHovered(false);
 
+  const isActive = active || isHovered;
+
   return (
     <li className="nav-link-item">
       <button
-        className={`nav-link-btn${active || isHovered ? " nav-link-btn-active" : ""}`}
+        className={`nav-link-btn${isActive ? " nav-link-btn-active" : ""}`}
         style={{ "--link-accent": link.accent } as React.CSSProperties}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         onClick={onClick}
       >
+        {/* pill background — same as qc-pill hover */}
         <span className="nav-link-pill" />
         <ShuffleText
           key={shuffleKey}
           text={link.label}
           tag="span"
-          className={`nav-link-text${active || isHovered ? " nav-link-text-active" : ""}`}
+          className={`nav-link-text${isActive ? " nav-link-text-active" : ""}`}
           shuffleDirection="right"
           duration={0.38}
           stagger={0.04}
@@ -64,15 +67,15 @@ function NavLinkItem({
           triggerOnHover={false}
           rootMargin="0px"
           threshold={0}
-          style={{ "--link-accent": link.accent } as React.CSSProperties}
         />
+        {/* dot indicator */}
         <span className="nav-link-dot" style={{ background: link.accent }} />
       </button>
     </li>
   );
 }
 
-// ─── Drawer Link with ShuffleText ─────────────────────────────────────────────
+// ─── Drawer Link ──────────────────────────────────────────────────────────────
 function DrawerLinkItem({
   link,
   active,
@@ -91,9 +94,11 @@ function DrawerLinkItem({
   };
   const handleMouseLeave = () => setIsHovered(false);
 
+  const isActive = active || isHovered;
+
   return (
     <div
-      className={`nav-drawer-link${active || isHovered ? " nav-drawer-link-active" : ""}`}
+      className={`nav-drawer-link${isActive ? " nav-drawer-link-active" : ""}`}
       style={{ "--link-accent": link.accent } as React.CSSProperties}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -112,7 +117,6 @@ function DrawerLinkItem({
         triggerOnHover={false}
         rootMargin="0px"
         threshold={0}
-        style={{ "--link-accent": link.accent } as React.CSSProperties}
       />
       <span className="nav-drawer-link-arrow">→</span>
     </div>
@@ -143,19 +147,16 @@ export default function FloatingNavbar() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700;1,800&family=Outfit:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
         *, *::before, *::after { box-sizing: border-box; }
 
-        /* ══ WRAPPER ══════════════════════════════════════════════════════ */
+        /* ══ WRAPPER ═══════════════════════════════════════════════════ */
         .nav-wrap {
           position: fixed;
-          top: 0;
-          left: 50%;
+          top: 0; left: 50%;
           transform: translateX(-50%);
-          width: 100%;
-          max-width: 100%;
-          z-index: 1000;
-          padding: 0;
+          width: 100%; max-width: 100%;
+          z-index: 1000; padding: 0;
           transition:
             width     0.5s cubic-bezier(0.22,1,0.36,1),
             max-width 0.5s cubic-bezier(0.22,1,0.36,1),
@@ -168,23 +169,19 @@ export default function FloatingNavbar() {
           top: 16px;
           width: calc(100% - 48px);
           max-width: 1200px;
-          padding: 0;
         }
         .nav-wrap-hidden {
           transform: translateX(-50%) translateY(-120%);
-          opacity: 0;
-          pointer-events: none;
+          opacity: 0; pointer-events: none;
         }
 
-        /* ══ PILL ═════════════════════════════════════════════════════════ */
+        /* ══ PILL ══════════════════════════════════════════════════════ */
         .nav-pill {
           display: flex; align-items: center; justify-content: space-between;
           padding: 0 32px 0 24px;
-          height: 68px;
-          border-radius: 0;
+          height: 68px; border-radius: 0;
           background: ${B.white};
-          border: none;
-          border-bottom: 1px solid ${B.border};
+          border: none; border-bottom: 1px solid ${B.border};
           box-shadow: none;
           transition:
             border-radius 0.5s cubic-bezier(0.22,1,0.36,1),
@@ -192,47 +189,32 @@ export default function FloatingNavbar() {
             box-shadow    0.4s ease,
             border        0.4s ease,
             height        0.5s cubic-bezier(0.22,1,0.36,1);
-          position: relative;
-          overflow: hidden;
+          position: relative; overflow: hidden;
         }
         .nav-pill-scrolled {
-          border-radius: 999px;
-          height: 62px;
+          border-radius: 999px; height: 62px;
           background: rgba(255,255,255,0.94);
-          backdrop-filter: blur(22px);
-          -webkit-backdrop-filter: blur(22px);
+          backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
           border: 1px solid rgba(0,0,0,0.08);
           box-shadow: 0 8px 44px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.05);
         }
-        .nav-pill::before { display: none; }
 
-        /* ══ LOGO AREA — FIXED ════════════════════════════════════════════ */
+        /* ══ LOGO ══════════════════════════════════════════════════════ */
         .nav-logo {
           display: flex; align-items: center;
           text-decoration: none; flex-shrink: 0; cursor: pointer;
         }
-        /* Borderless, transparent, landscape container */
         .nav-logo-img-wrap {
-          height: 42px;
-          width: auto;
-          flex-shrink: 0;
-          display: flex;
-          align-items: center;
-          justify-content: flex-start;
-          background: transparent;
-          border: none;
-          overflow: visible;
+          height: 42px; width: auto; flex-shrink: 0;
+          display: flex; align-items: center; justify-content: flex-start;
+          background: transparent; border: none; overflow: visible;
         }
         .nav-logo-img {
-          height: 42px;
-          width: auto;
-          max-width: 160px;
-          object-fit: contain;
-          object-position: left center;
-          display: block;
+          height: 42px; width: auto; max-width: 160px;
+          object-fit: contain; object-position: left center; display: block;
         }
 
-        /* ══ LINKS LIST ═══════════════════════════════════════════════════ */
+        /* ══ LINKS LIST ════════════════════════════════════════════════ */
         .nav-links {
           display: flex; align-items: center; gap: 2px;
           list-style: none; margin: 0; padding: 0;
@@ -240,56 +222,74 @@ export default function FloatingNavbar() {
         @media (max-width: 760px) { .nav-links { display: none; } }
 
         .nav-link-item { position: relative; }
+
+        /* ── The button that wraps each link ── */
         .nav-link-btn {
           all: unset;
           display: flex; align-items: center;
-          padding: 9px 16px; border-radius: 999px;
-          cursor: pointer; position: relative; overflow: visible;
+          gap: 0;
+          padding: 9px 16px;
+          border-radius: 999px;
+          cursor: pointer;
+          position: relative;
+          overflow: visible;
+          transition: none;
         }
 
+        /* ── Floating pill bg (same effect as qc-pill hover) ── */
         .nav-link-pill {
           position: absolute; inset: 0; border-radius: 999px;
           background: ${B.white};
-          border: 1px solid rgba(0,0,0,0.07);
-          box-shadow: 0 2px 14px rgba(0,0,0,0.07);
-          opacity: 0; transform: scale(0.82);
-          transition: opacity 0.28s ease, transform 0.32s cubic-bezier(0.22,1,0.36,1);
+          border: 1.5px solid rgba(0,0,0,0.07);
+          box-shadow: 0 6px 24px rgba(0,0,0,0.07);
+          opacity: 0;
+          transform: scale(0.84);
+          transition:
+            opacity  0.28s ease,
+            transform 0.32s cubic-bezier(0.22,1,0.36,1);
           pointer-events: none;
         }
-        .nav-link-btn-active .nav-link-pill { opacity: 1; transform: scale(1); }
+        .nav-link-btn-active .nav-link-pill {
+          opacity: 1;
+          transform: scale(1);
+        }
 
+        /* ── Link text — Outfit, same weight as qc-pill-label ── */
         .nav-link-text {
-          font-family: 'Playfair Display', serif !important;
-          font-size: 15px !important;
-          font-weight: 800 !important;
+          font-family: 'Outfit', sans-serif !important;
+          font-size: 13.5px !important;
+          font-weight: 700 !important;
           color: ${B.charcoal} !important;
-          letter-spacing: -0.01em !important;
-          font-style: italic !important;
+          letter-spacing: 0em !important;
+          font-style: normal !important;
           position: relative; z-index: 1;
-          visibility: visible !important;
           line-height: 1.2 !important;
           display: inline-block !important;
           white-space: nowrap;
-          transition: color 0.22s ease;
+          transition: color 0.2s ease;
         }
+        /* Active / hover state — accent colour like qc-pill-label hover */
         .nav-link-text-active {
-          color: ${B.teal} !important;
+          color: var(--link-accent) !important;
         }
-        .nav-link-text-active .shuffle-char {
-          color: ${B.teal} !important;
+        /* Target individual chars rendered by ShuffleText */
+        .nav-link-btn-active .nav-link-text .shuffle-char {
+          color: var(--link-accent) !important;
         }
 
+        /* ── Dot indicator ── */
         .nav-link-dot {
-          position: absolute; bottom: 3px; left: 50%;
+          position: absolute; bottom: 4px; left: 50%;
           transform: translateX(-50%) scale(0);
           width: 4px; height: 4px; border-radius: 50%;
-          background: ${B.teal};
           transition: transform 0.32s cubic-bezier(0.34,1.56,0.64,1);
           z-index: 1;
         }
-        .nav-link-btn-active .nav-link-dot { transform: translateX(-50%) scale(1); }
+        .nav-link-btn-active .nav-link-dot {
+          transform: translateX(-50%) scale(1);
+        }
 
-        /* ══ RIGHT SIDE ═══════════════════════════════════════════════════ */
+        /* ══ RIGHT SIDE ════════════════════════════════════════════════ */
         .nav-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 
         .nav-ghost {
@@ -303,6 +303,7 @@ export default function FloatingNavbar() {
         .nav-ghost:hover { border-color: ${B.teal}; color: ${B.teal}; }
         @media (max-width: 560px) { .nav-ghost { display: none; } }
 
+        /* ── CTA button (same layer animation as QuoteCompare) ── */
         .nav-cta {
           all: unset; position: relative; display: inline-flex;
           height: 44px; align-items: center; border-radius: 9999px; padding: 0 24px;
@@ -312,8 +313,7 @@ export default function FloatingNavbar() {
         .nav-cta-bg {
           position: absolute; inset: 0; border-radius: 9999px;
           background: ${B.teal};
-          box-shadow: 0 4px 18px rgba(45,191,191,0.40);
-          overflow: hidden;
+          box-shadow: 0 4px 18px rgba(45,191,191,0.40); overflow: hidden;
           transition: transform 1.8s cubic-bezier(0.19,1,0.22,1);
         }
         .nav-cta:hover .nav-cta-bg { transform: scale(1.05); }
@@ -341,7 +341,7 @@ export default function FloatingNavbar() {
         .nav-cta:hover .nav-cta-static { transform: translateY(-100%); opacity: 0; }
         .nav-cta:hover .nav-cta-hover  { transform: translateY(0); opacity: 1; }
 
-        /* ══ HAMBURGER ════════════════════════════════════════════════════ */
+        /* ══ HAMBURGER ═════════════════════════════════════════════════ */
         .nav-burger {
           all: unset;
           width: 42px; height: 42px; border-radius: 50%;
@@ -362,7 +362,7 @@ export default function FloatingNavbar() {
         .nav-burger-open .nav-burger-line:nth-child(2) { opacity: 0; width: 0; }
         .nav-burger-open .nav-burger-line:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
 
-        /* ══ MOBILE DRAWER ════════════════════════════════════════════════ */
+        /* ══ MOBILE DRAWER ═════════════════════════════════════════════ */
         .nav-drawer { position: fixed; inset: 0; z-index: 999; pointer-events: none; }
         .nav-drawer-backdrop {
           position: absolute; inset: 0;
@@ -413,12 +413,16 @@ export default function FloatingNavbar() {
         .nav-drawer-link:hover { background: ${B.offwhite}; }
         .nav-drawer-link-active { background: ${B.offwhite}; }
 
+        /* ── Drawer link text — Outfit, bold, matching QuoteCompare label ── */
         .nav-drawer-link-text {
-          font-family: 'Playfair Display', serif !important;
-          font-size: 24px !important; font-weight: 800 !important;
-          color: ${B.charcoal} !important; letter-spacing: -0.01em !important;
-          font-style: italic !important;
-          visibility: visible !important; white-space: nowrap;
+          font-family: 'Outfit', sans-serif !important;
+          font-size: 22px !important;
+          font-weight: 800 !important;
+          color: ${B.charcoal} !important;
+          letter-spacing: -0.02em !important;
+          font-style: normal !important;
+          visibility: visible !important;
+          white-space: nowrap;
           transition: color 0.2s;
         }
         .nav-drawer-link:hover .nav-drawer-link-text,
@@ -518,7 +522,6 @@ export default function FloatingNavbar() {
         <div className="nav-drawer-backdrop" onClick={() => setMenuOpen(false)} />
         <div className="nav-drawer-panel">
           <div className="nav-drawer-header">
-            {/* ── Drawer logo — same image ── */}
             <a className="nav-logo" href="/">
               <div className="nav-logo-img-wrap">
                 <img
