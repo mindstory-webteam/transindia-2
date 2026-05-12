@@ -380,7 +380,7 @@ function useInView(threshold = 0.1) {
   return { ref, inView };
 }
 
-// ─── Animated Button ──────────────────────────────────────────────────────────
+// ─── Animated Button (unchanged from original) ────────────────────────────────
 function AnimatedButton({ label, bg, layers, onClick, type = "button" }: {
   label: string; bg: string; layers: [string, string, string];
   onClick?: () => void; type?: "button" | "submit";
@@ -501,7 +501,7 @@ function PlanCard({ plan, index }: {
       <ul className="ip-plan-features">
         {plan.features.map((f) => (
           <li key={f} className="ip-plan-feature">
-            <span style={{ color: plan.accent }}>✓</span> {f}
+            <span className="ip-plan-check" style={{ color: plan.accent }}>✓</span> {f}
           </li>
         ))}
       </ul>
@@ -515,6 +515,30 @@ function PlanCard({ plan, index }: {
         </button>
         <button className="ip-plan-advisor">Get Advice</button>
       </div>
+    </div>
+  );
+}
+
+// ─── Trust Strip ─────────────────────────────────────────────────────────────
+function TrustStrip() {
+  const items = [
+    { icon: "⚡", label: "Instant Policy Issuance", sub: "Get covered in under 5 min" },
+    { icon: "🔒", label: "Zero Hidden Fees",         sub: "What you see is what you pay" },
+    { icon: "🏦", label: "50+ Insurers",             sub: "Best-in-class plans compared" },
+    { icon: "🤝", label: "Expert Support 24/7",      sub: "Human advisors, not bots" },
+    { icon: "💸", label: "Cashless Claims",           sub: "Hassle-free claim settlement" },
+  ];
+  return (
+    <div className="ip-trust-strip">
+      {items.map((it) => (
+        <div key={it.label} className="ip-trust-item">
+          <span className="ip-trust-icon">{it.icon}</span>
+          <div>
+            <p className="ip-trust-label">{it.label}</p>
+            <p className="ip-trust-sub">{it.sub}</p>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
@@ -571,181 +595,304 @@ export default function InsurancePage() {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700;1,800&family=Outfit:wght@300;400;500;600;700&display=swap');
-        *, *::before, *::after { box-sizing: border-box; }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        /* ══ ROOT ══════════════════════════════════════════════════════════ */
+        /* ══ ROOT ══ */
         .ip-root {
           font-family: 'Outfit', sans-serif;
           background: ${B.offwhite};
           min-height: 100vh; width: 100%;
           color: ${B.charcoal}; position: relative;
+          overflow-x: hidden;
         }
+
+        /* Decorative background orb */
         .ip-root::before {
-          content: ''; position: fixed; top: -100px; right: -100px;
-          width: 600px; height: 600px; border-radius: 50%;
-          background: radial-gradient(circle, var(--cat-accent-alpha, rgba(45,191,191,0.06)) 0%, transparent 70%);
+          content: ''; position: fixed; top: -180px; right: -180px;
+          width: 700px; height: 700px; border-radius: 50%;
+          background: radial-gradient(circle, var(--cat-accent-alpha, rgba(45,191,191,0.07)) 0%, transparent 70%);
+          pointer-events: none; z-index: 0;
+        }
+        .ip-root::after {
+          content: ''; position: fixed; bottom: -120px; left: -120px;
+          width: 500px; height: 500px; border-radius: 50%;
+          background: radial-gradient(circle, rgba(232,80,58,0.05) 0%, transparent 70%);
           pointer-events: none; z-index: 0;
         }
 
-        /* ══ HERO BANNER ═══════════════════════════════════════════════════ */
+        /* ══ HERO ══ */
         .ip-hero {
+          position: relative; z-index: 1;
           background: ${B.white};
           border-bottom: 1px solid ${B.border};
-          padding: 88px 9vw 0;
-          position: relative; z-index: 1; overflow: hidden;
+          overflow: hidden;
         }
-        .ip-hero::after {
-          content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
-          background: linear-gradient(90deg, var(--cat-accent, ${B.teal}), transparent 60%);
+
+        /* Top accent line */
+        .ip-hero-accent-bar {
+          height: 3px;
+          background: linear-gradient(90deg, var(--cat-accent, ${B.teal}) 0%, #17f1d1 40%, transparent 80%);
         }
+
         .ip-hero-inner {
-          display: flex; align-items: flex-end; justify-content: space-between;
-          gap: 32px; flex-wrap: wrap; padding-bottom: 40px;
+          padding: 0 9vw;
+          display: grid;
+          grid-template-columns: 1fr auto;
+          gap: 40px;
+          align-items: end;
+          min-height: 280px;
         }
+
+        .ip-hero-left { padding: 48px 0 44px; }
+
         .ip-back-btn {
           all: unset; display: inline-flex; align-items: center; gap: 8px;
-          font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 600;
-          color: ${B.gray}; cursor: pointer; margin-bottom: 24px;
-          transition: color 0.2s;
+          font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 600;
+          color: ${B.gray}; cursor: pointer; margin-bottom: 28px;
+          letter-spacing: .06em; text-transform: uppercase;
+          transition: color 0.2s, gap 0.2s;
         }
-        .ip-back-btn:hover { color: var(--cat-accent, ${B.teal}); }
+        .ip-back-btn:hover { color: var(--cat-accent, ${B.teal}); gap: 12px; }
+        .ip-back-btn svg { transition: transform 0.2s; }
+        .ip-back-btn:hover svg { transform: translateX(-3px); }
+
         .ip-eyebrow {
           display: inline-flex; align-items: center; gap: 10px;
-          font-size: 11px; font-weight: 700; letter-spacing: .14em;
-          text-transform: uppercase; color: var(--cat-accent, ${B.teal}); margin-bottom: 18px;
+          font-size: 11px; font-weight: 700; letter-spacing: .16em;
+          text-transform: uppercase; color: var(--cat-accent, ${B.teal}); margin-bottom: 20px;
         }
         .ip-eyebrow::before {
-          content: ''; display: block; width: 28px; height: 2px;
+          content: ''; display: block; width: 24px; height: 2px;
           background: var(--cat-accent, ${B.teal}); border-radius: 999px;
         }
-        .ip-heading-wrap { padding: 2px 0 0; overflow: visible; clip-path: none; }
+
+        .ip-heading-wrap { margin-bottom: 18px; }
         .ip-heading-line {
           display: block;
           font-family: 'Playfair Display', serif !important;
-          font-size: clamp(36px, 4.2vw, 60px) !important;
-          font-weight: 800 !important; line-height: 1.1 !important;
-          letter-spacing: -0.01em !important; color: ${B.charcoal} !important;
-          overflow: visible !important; padding-bottom: 4px !important;
+          font-size: clamp(38px, 4.5vw, 64px) !important;
+          font-weight: 800 !important; line-height: 1.08 !important;
+          letter-spacing: -0.02em !important; color: ${B.charcoal} !important;
+          overflow: visible !important; padding-bottom: 6px !important;
         }
         .ip-heading-accent {
           color: var(--cat-accent, ${B.teal}) !important; font-style: italic !important;
         }
+
         .ip-hero-desc {
-          font-size: 16px; color: #888; line-height: 1.7; margin: 16px 0 0; max-width: 480px;
-        }
-        .ip-hero-right {
-          display: flex; flex-direction: column; align-items: flex-end; gap: 12px;
-          padding-bottom: 8px; flex-shrink: 0;
-        }
-        .ip-hero-icon {
-          font-size: 64px; line-height: 1;
-          filter: drop-shadow(0 8px 24px rgba(0,0,0,0.12));
-        }
-        .ip-hero-badges { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
-        .ip-hero-badge {
-          font-size: 11px; font-weight: 600; color: ${B.charcoal};
-          padding: 5px 12px; border-radius: 999px;
-          background: ${B.offwhite}; border: 1px solid ${B.border}; letter-spacing: .03em;
-        }
-        @media (max-width: 720px) {
-          .ip-hero { padding: 80px 6vw 0; }
-          .ip-hero-inner { flex-direction: column; align-items: flex-start; }
-          .ip-hero-right { align-items: flex-start; }
+          font-size: 15px; color: #888; line-height: 1.75; max-width: 440px;
+          margin-bottom: 32px;
         }
 
-        /* ══ PROGRESS BAR ══════════════════════════════════════════════════ */
+        .ip-hero-badges {
+          display: flex; gap: 8px; flex-wrap: wrap;
+        }
+        .ip-hero-badge {
+          font-size: 11px; font-weight: 600; color: ${B.charcoal};
+          padding: 6px 14px; border-radius: 999px;
+          background: ${B.offwhite}; border: 1px solid ${B.border}; letter-spacing: .03em;
+        }
+
+        /* Right visual column */
+        .ip-hero-right {
+          display: flex; flex-direction: column; align-items: flex-end;
+          justify-content: flex-end; padding-bottom: 44px; gap: 20px;
+          position: relative;
+        }
+
+        .ip-hero-icon-wrap {
+          width: 120px; height: 120px; border-radius: 32px;
+          display: flex; align-items: center; justify-content: center;
+          background: var(--cat-bg, ${B.offwhite});
+          border: 1px solid rgba(0,0,0,0.06);
+          box-shadow: 0 12px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(255,255,255,0.8) inset;
+          position: relative;
+        }
+        .ip-hero-icon-wrap::before {
+          content: ''; position: absolute; inset: -1px;
+          border-radius: 33px;
+          background: linear-gradient(135deg, var(--cat-accent, ${B.teal})20, transparent 60%);
+          z-index: 0;
+        }
+        .ip-hero-icon { font-size: 56px; line-height: 1; position: relative; z-index: 1; }
+
+        .ip-hero-stat-row {
+          display: flex; flex-direction: column; align-items: flex-end; gap: 8px;
+        }
+        .ip-hero-stat {
+          display: flex; align-items: center; gap: 10px;
+          background: ${B.white}; border: 1px solid ${B.border};
+          border-radius: 12px; padding: 10px 16px;
+          box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        }
+        .ip-hero-stat-val {
+          font-family: 'Playfair Display', serif;
+          font-size: 18px; font-weight: 800;
+          color: var(--cat-accent, ${B.teal});
+        }
+        .ip-hero-stat-lbl {
+          font-size: 11px; font-weight: 600; color: ${B.gray};
+          letter-spacing: .04em; text-transform: uppercase;
+        }
+
+        @media (max-width: 768px) {
+          .ip-hero-inner { grid-template-columns: 1fr; min-height: auto; padding: 0 6vw; }
+          .ip-hero-left { padding: 40px 0 0; }
+          .ip-hero-right { flex-direction: row; align-items: center; justify-content: flex-start; padding-bottom: 36px; }
+          .ip-hero-stat-row { flex-direction: row; }
+        }
+
+        /* ══ TRUST STRIP ══ */
+        .ip-trust-strip {
+          position: relative; z-index: 1;
+          background: ${B.white};
+          border-bottom: 1px solid ${B.border};
+          display: flex; align-items: stretch;
+          overflow-x: auto; padding: 0 9vw;
+          scrollbar-width: none;
+        }
+        .ip-trust-strip::-webkit-scrollbar { display: none; }
+        .ip-trust-item {
+          display: flex; align-items: center; gap: 12px;
+          padding: 16px 24px; flex-shrink: 0;
+          border-right: 1px solid ${B.border};
+          transition: background 0.2s;
+        }
+        .ip-trust-item:last-child { border-right: none; }
+        .ip-trust-item:first-child { padding-left: 0; }
+        .ip-trust-icon { font-size: 20px; }
+        .ip-trust-label {
+          font-size: 12px; font-weight: 700; color: ${B.charcoal};
+          white-space: nowrap; margin-bottom: 1px;
+        }
+        .ip-trust-sub {
+          font-size: 11px; color: ${B.gray}; white-space: nowrap;
+        }
+
+        /* ══ PROGRESS BAR ══ */
         .ip-progress-wrap {
           background: ${B.white}; border-bottom: 1px solid ${B.border};
-          padding: 20px 9vw; position: sticky; top: 0; z-index: 100;
-          box-shadow: 0 2px 16px rgba(0,0,0,0.04);
+          padding: 18px 9vw; position: sticky; top: 0; z-index: 100;
+          box-shadow: 0 2px 20px rgba(0,0,0,0.05);
         }
         .ip-progress-top {
           display: flex; align-items: center; justify-content: space-between;
-          margin-bottom: 12px;
+          margin-bottom: 14px;
         }
-        .ip-progress-steps {
-          display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-        }
+        .ip-progress-steps { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
         .ip-progress-step {
-          display: flex; align-items: center; gap: 6px;
+          display: flex; align-items: center; gap: 8px;
           font-size: 12px; font-weight: 600;
-          color: ${B.gray};
-          transition: color 0.3s;
+          color: ${B.gray}; transition: color 0.3s;
         }
         .ip-progress-step-active { color: var(--cat-accent, ${B.teal}); }
         .ip-progress-step-done   { color: #22c55e; }
         .ip-progress-step-num {
-          width: 22px; height: 22px; border-radius: 50%;
+          width: 26px; height: 26px; border-radius: 50%;
           display: flex; align-items: center; justify-content: center;
-          font-size: 11px; font-weight: 700;
+          font-size: 11px; font-weight: 800;
           background: ${B.offwhite}; border: 1.5px solid ${B.border};
           transition: background 0.3s, border-color 0.3s, color 0.3s;
         }
         .ip-progress-step-active .ip-progress-step-num {
           background: var(--cat-accent, ${B.teal}); color: #fff;
           border-color: var(--cat-accent, ${B.teal});
+          box-shadow: 0 4px 12px var(--cat-accent, ${B.teal})40;
         }
         .ip-progress-step-done .ip-progress-step-num {
           background: #22c55e; color: #fff; border-color: #22c55e;
         }
-        .ip-progress-sep { color: ${B.border}; font-size: 16px; }
+        .ip-progress-step-name {
+          font-size: 12px; font-weight: 600;
+          display: none;
+        }
+        @media (min-width: 600px) { .ip-progress-step-name { display: block; } }
+        .ip-progress-sep { color: ${B.border}; font-size: 18px; user-select: none; }
+        .ip-progress-meta {
+          display: flex; align-items: center; gap: 16px;
+        }
         .ip-progress-pct {
-          font-size: 12px; font-weight: 700;
+          font-size: 12px; font-weight: 800;
           color: var(--cat-accent, ${B.teal});
+          letter-spacing: .04em;
         }
         .ip-progress-bar {
-          height: 4px; background: ${B.border}; border-radius: 999px; overflow: hidden;
+          height: 5px; background: ${B.border}; border-radius: 999px; overflow: hidden;
         }
         .ip-progress-fill {
           height: 100%; border-radius: 999px;
           background: linear-gradient(90deg, var(--cat-accent, ${B.teal}), #17f1d1);
-          transition: width 0.6s cubic-bezier(0.22,1,0.36,1);
+          transition: width 0.65s cubic-bezier(0.22,1,0.36,1);
+          position: relative;
         }
-        @media (max-width: 720px) { .ip-progress-wrap { padding: 16px 6vw; } }
-
-        /* ══ FORM CONTAINER ════════════════════════════════════════════════ */
-        .ip-form-wrap {
-          max-width: 860px; margin: 0 auto;
-          padding: 56px 9vw 80px; position: relative; z-index: 1;
+        .ip-progress-fill::after {
+          content: ''; position: absolute; right: 0; top: 50%;
+          transform: translate(50%,-50%);
+          width: 10px; height: 10px; border-radius: 50%;
+          background: var(--cat-accent, ${B.teal});
+          box-shadow: 0 0 0 3px white;
         }
-        @media (max-width: 720px) { .ip-form-wrap { padding: 36px 6vw 60px; } }
+        @media (max-width: 720px) { .ip-progress-wrap { padding: 14px 6vw; } }
 
+        /* ══ MAIN CONTENT LAYOUT ══ */
+        .ip-content-layout {
+          display: grid;
+          grid-template-columns: 1fr 340px;
+          gap: 0;
+          max-width: 1280px;
+          margin: 0 auto;
+          padding: 48px 9vw 80px;
+          position: relative; z-index: 1;
+          align-items: start;
+        }
+        @media (max-width: 960px) {
+          .ip-content-layout { grid-template-columns: 1fr; padding: 36px 6vw 60px; }
+          .ip-sidebar { display: none; }
+        }
+
+        /* ══ FORM CARD ══ */
         .ip-step-card {
-          background: ${B.white}; border-radius: 28px;
+          background: ${B.white}; border-radius: 24px;
           border: 1px solid ${B.border};
-          padding: 44px 44px 40px;
-          box-shadow: 0 8px 40px rgba(0,0,0,.06);
+          padding: 48px 48px 44px;
+          box-shadow: 0 8px 48px rgba(0,0,0,.06), 0 2px 8px rgba(0,0,0,.03);
           animation: ipStepIn 0.5s cubic-bezier(0.22,1,0.36,1) both;
         }
-        @keyframes ipStepIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @media (max-width: 560px) { .ip-step-card { padding: 28px 22px 28px; } }
+        @keyframes ipStepIn { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+        @media (max-width: 560px) { .ip-step-card { padding: 28px 22px 28px; border-radius: 20px; } }
 
-        .ip-step-header { margin-bottom: 32px; }
+        .ip-step-header { margin-bottom: 36px; padding-bottom: 28px; border-bottom: 1px solid ${B.border}; }
         .ip-step-num {
           font-family: 'Playfair Display', serif;
           font-size: 11px; font-weight: 700;
-          color: var(--cat-accent, ${B.teal}); letter-spacing: .12em;
-          text-transform: uppercase; margin-bottom: 10px;
+          color: var(--cat-accent, ${B.teal}); letter-spacing: .14em;
+          text-transform: uppercase; margin-bottom: 12px;
+          display: flex; align-items: center; gap: 8px;
+        }
+        .ip-step-num::before {
+          content: ''; display: block; width: 20px; height: 2px;
+          background: var(--cat-accent, ${B.teal}); border-radius: 999px;
         }
         .ip-step-title {
           font-family: 'Playfair Display', serif;
-          font-size: clamp(22px, 2.8vw, 32px); font-weight: 800;
-          color: ${B.charcoal}; line-height: 1.2; margin: 0 0 10px;
+          font-size: clamp(24px, 2.8vw, 34px); font-weight: 800;
+          color: ${B.charcoal}; line-height: 1.15; margin: 0 0 10px;
         }
-        .ip-step-subtitle { font-size: 15px; color: #888; line-height: 1.65; margin: 0; }
+        .ip-step-subtitle { font-size: 14px; color: #999; line-height: 1.65; margin: 0; }
 
         /* ── Fields Grid ── */
-        .ip-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 22px 28px; margin-top: 32px; }
+        .ip-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 24px 28px; }
         @media (max-width: 640px) { .ip-fields { grid-template-columns: 1fr; } }
 
         .ip-field { display: flex; flex-direction: column; gap: 8px; }
         .ip-label {
-          font-size: 13px; font-weight: 700; color: ${B.charcoal}; letter-spacing: .02em;
+          font-size: 12px; font-weight: 700; color: ${B.charcoal};
+          letter-spacing: .04em; text-transform: uppercase;
         }
         .ip-req { color: var(--cat-accent, ${B.teal}); margin-left: 2px; }
 
         .ip-input, .ip-select {
-          height: 48px; border-radius: 12px; padding: 0 16px;
+          height: 50px; border-radius: 12px; padding: 0 16px;
           font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 500;
           color: ${B.charcoal}; background: ${B.offwhite};
           border: 1.5px solid ${B.border};
@@ -758,16 +905,21 @@ export default function InsurancePage() {
           box-shadow: 0 0 0 3px var(--field-accent, ${B.teal})18;
           background: ${B.white};
         }
-        .ip-select { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4 6l4 4 4-4' stroke='%23B5B5B5' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+        .ip-input::placeholder { color: #ccc; }
+        .ip-select {
+          cursor: pointer;
+          background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4 6l4 4 4-4' stroke='%23B5B5B5' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+          background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px;
+        }
 
-        .ip-radio-group { display: flex; gap: 10px; flex-wrap: wrap; }
+        .ip-radio-group { display: flex; gap: 8px; flex-wrap: wrap; }
         .ip-radio-btn {
           all: unset; display: inline-flex; align-items: center; gap: 8px;
-          padding: 10px 16px; border-radius: 999px; cursor: pointer;
+          padding: 9px 16px; border-radius: 10px; cursor: pointer;
           font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 600;
           color: ${B.charcoal}; background: ${B.offwhite};
           border: 1.5px solid ${B.border};
-          transition: border-color 0.22s, background 0.22s, color 0.22s;
+          transition: border-color 0.22s, background 0.22s, color 0.22s, box-shadow 0.22s;
         }
         .ip-radio-btn:hover { border-color: var(--field-accent, ${B.teal}); }
         .ip-radio-active {
@@ -777,7 +929,7 @@ export default function InsurancePage() {
           box-shadow: 0 0 0 3px var(--field-accent, ${B.teal})15;
         }
         .ip-radio-dot {
-          width: 8px; height: 8px; border-radius: 50%;
+          width: 7px; height: 7px; border-radius: 50%;
           background: var(--field-accent, ${B.teal});
           opacity: 0; transform: scale(0);
           transition: opacity 0.2s, transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
@@ -788,48 +940,109 @@ export default function InsurancePage() {
         /* ── Form Actions ── */
         .ip-form-actions {
           display: flex; align-items: center; justify-content: space-between;
-          margin-top: 36px; gap: 16px; flex-wrap: wrap;
+          margin-top: 36px; padding-top: 28px;
+          border-top: 1px solid ${B.border};
+          gap: 16px; flex-wrap: wrap;
         }
         .ip-back-link {
-          all: unset; font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 600;
+          all: unset; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 700;
           color: ${B.gray}; cursor: pointer; display: flex; align-items: center; gap: 6px;
+          letter-spacing: .04em; text-transform: uppercase;
           transition: color 0.2s;
         }
         .ip-back-link:hover { color: ${B.charcoal}; }
-        .ip-validate-hint {
-          font-size: 12px; color: ${B.coral}; font-weight: 600;
-          display: flex; align-items: center; gap: 6px;
+
+        /* ══ SIDEBAR ══ */
+        .ip-sidebar {
+          padding-left: 40px; position: sticky; top: 100px;
         }
 
-        /* ══ PLANS SECTION ═════════════════════════════════════════════════ */
+        .ip-sidebar-info {
+          background: ${B.white}; border-radius: 20px;
+          border: 1px solid ${B.border};
+          padding: 28px 24px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+          margin-bottom: 16px;
+        }
+        .ip-sidebar-info h4 {
+          font-family: 'Playfair Display', serif;
+          font-size: 18px; font-weight: 800;
+          color: ${B.charcoal}; margin-bottom: 8px;
+        }
+        .ip-sidebar-info p {
+          font-size: 13px; color: #888; line-height: 1.65;
+        }
+
+        .ip-sidebar-perks {
+          background: ${B.white}; border-radius: 20px;
+          border: 1px solid ${B.border}; padding: 24px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+        }
+        .ip-sidebar-perks h5 {
+          font-size: 11px; font-weight: 700; letter-spacing: .12em;
+          text-transform: uppercase; color: ${B.gray}; margin-bottom: 16px;
+        }
+        .ip-perk {
+          display: flex; align-items: flex-start; gap: 10px;
+          margin-bottom: 14px;
+        }
+        .ip-perk:last-child { margin-bottom: 0; }
+        .ip-perk-icon {
+          width: 32px; height: 32px; border-radius: 9px; flex-shrink: 0;
+          display: flex; align-items: center; justify-content: center;
+          font-size: 16px;
+          background: var(--cat-bg, ${B.offwhite});
+        }
+        .ip-perk-text p { font-size: 13px; font-weight: 700; color: ${B.charcoal}; margin-bottom: 2px; }
+        .ip-perk-text span { font-size: 12px; color: #999; }
+
+        /* ══ PLANS SECTION ══ */
         .ip-plans-section {
-          padding: 72px 9vw 100px; position: relative; z-index: 1;
+          padding: 64px 9vw 100px; position: relative; z-index: 1;
         }
         @media (max-width: 720px) { .ip-plans-section { padding: 48px 6vw 80px; } }
 
-        .ip-plans-header { margin-bottom: 40px; }
+        /* Plans header two-col */
+        .ip-plans-header-row {
+          display: flex; align-items: flex-end; justify-content: space-between;
+          gap: 24px; flex-wrap: wrap; margin-bottom: 40px;
+        }
         .ip-plans-eyebrow {
           display: inline-flex; align-items: center; gap: 10px;
-          font-size: 11px; font-weight: 700; letter-spacing: .14em;
+          font-size: 11px; font-weight: 700; letter-spacing: .16em;
           text-transform: uppercase; color: var(--cat-accent, ${B.teal}); margin-bottom: 16px;
         }
         .ip-plans-eyebrow::before {
-          content: ''; display: block; width: 28px; height: 2px;
+          content: ''; display: block; width: 24px; height: 2px;
           background: var(--cat-accent, ${B.teal}); border-radius: 999px;
         }
         .ip-plans-heading {
           font-family: 'Playfair Display', serif;
           font-size: clamp(32px, 3.8vw, 52px); font-weight: 800;
-          color: ${B.charcoal}; line-height: 1.12; margin: 0 0 12px;
+          color: ${B.charcoal}; line-height: 1.1; margin: 0 0 10px;
         }
         .ip-plans-heading em { color: var(--cat-accent, ${B.teal}); font-style: italic; }
         .ip-plans-sub {
-          font-size: 15px; color: #888; line-height: 1.65;
-          max-width: 500px;
+          font-size: 14px; color: #888; line-height: 1.65;
+          max-width: 400px;
         }
 
+        .ip-plans-actions-top { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+        .ip-plans-irdai {
+          display: flex; align-items: center; gap: 6px;
+          font-size: 11px; font-weight: 700; color: ${B.gray};
+          letter-spacing: .06em;
+        }
+        .ip-plans-irdai::before {
+          content: '✓'; display: inline-flex; align-items: center; justify-content: center;
+          width: 18px; height: 18px; border-radius: 50%;
+          background: #22c55e20; color: #22c55e; font-size: 10px; font-weight: 900;
+        }
+
+        /* Plans Grid */
         .ip-plans-grid {
           display: grid; grid-template-columns: repeat(3,1fr); gap: 20px;
+          margin-bottom: 40px;
         }
         @media (max-width: 860px) { .ip-plans-grid { grid-template-columns: 1fr; } }
 
@@ -838,36 +1051,47 @@ export default function InsurancePage() {
           background: ${B.white}; border-radius: 24px;
           border: 1.5px solid rgba(0,0,0,0.07); padding: 28px 24px 24px;
           display: flex; flex-direction: column;
-          box-shadow: 0 4px 20px rgba(0,0,0,.05);
+          box-shadow: 0 4px 20px rgba(0,0,0,.04);
           transition: transform 0.35s cubic-bezier(0.22,1,0.36,1), box-shadow 0.35s ease;
           animation: ipPlanIn 0.6s cubic-bezier(0.22,1,0.36,1) both;
           position: relative; overflow: hidden;
         }
         @keyframes ipPlanIn { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
-        .ip-plan:hover { transform: translateY(-6px); box-shadow: 0 16px 48px rgba(0,0,0,.10), 0 4px 12px var(--plan-accent)20; }
-        .ip-plan-rec { border-color: var(--plan-accent) !important; transform: translateY(-4px); box-shadow: 0 8px 32px rgba(0,0,0,.08), 0 0 0 3px var(--plan-accent)15 !important; }
-        .ip-plan-rec:hover { transform: translateY(-8px) !important; }
-        .ip-plan-top-bar { position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+        .ip-plan:hover { transform: translateY(-6px); box-shadow: 0 20px 60px rgba(0,0,0,.10), 0 4px 12px var(--plan-accent)22; }
+        .ip-plan-rec {
+          border-color: var(--plan-accent) !important;
+          transform: translateY(-4px);
+          box-shadow: 0 8px 40px rgba(0,0,0,.08), 0 0 0 4px var(--plan-accent)12 !important;
+        }
+        .ip-plan-rec:hover { transform: translateY(-10px) !important; }
+        .ip-plan-top-bar { position: absolute; top: 0; left: 0; right: 0; height: 4px; }
         .ip-plan-badge {
-          position: absolute; top: 16px; right: 16px;
-          font-size: 10px; font-weight: 700; letter-spacing: .06em;
+          position: absolute; top: 18px; right: 18px;
+          font-size: 10px; font-weight: 800; letter-spacing: .06em;
           text-transform: uppercase; padding: 4px 10px; border-radius: 999px;
         }
-        .ip-plan-header { margin-bottom: 16px; }
+        .ip-plan-header { margin-bottom: 18px; }
         .ip-plan-name {
           font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 800;
           color: ${B.charcoal}; margin: 0 0 4px;
         }
-        .ip-plan-cover { font-size: 12px; color: ${B.gray}; font-weight: 600; margin: 0 0 10px; text-transform: uppercase; letter-spacing: .06em; }
+        .ip-plan-cover { font-size: 11px; color: ${B.gray}; font-weight: 700; margin: 0 0 12px; text-transform: uppercase; letter-spacing: .08em; }
         .ip-plan-price-row { display: flex; align-items: baseline; gap: 4px; }
-        .ip-plan-price { font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 900; line-height: 1; }
+        .ip-plan-price { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 900; line-height: 1; }
         .ip-plan-per { font-size: 13px; color: ${B.gray}; font-weight: 500; }
-        .ip-plan-divider { height: 1.5px; border-radius: 999px; margin: 16px 0; opacity: 0.15; }
-        .ip-plan-features { list-style: none; margin: 0 0 24px; padding: 0; display: flex; flex-direction: column; gap: 9px; flex: 1; }
-        .ip-plan-feature { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: #555; line-height: 1.45; }
+        .ip-plan-divider { height: 1px; border-radius: 999px; margin: 18px 0; opacity: 0.2; }
+        .ip-plan-features {
+          list-style: none; margin: 0 0 24px; padding: 0;
+          display: flex; flex-direction: column; gap: 10px; flex: 1;
+        }
+        .ip-plan-feature {
+          display: flex; align-items: flex-start; gap: 8px;
+          font-size: 13px; color: #555; line-height: 1.4;
+        }
+        .ip-plan-check { flex-shrink: 0; font-weight: 900; }
         .ip-plan-actions { display: flex; gap: 10px; }
         .ip-plan-buy {
-          all: unset; flex: 1; height: 44px; border-radius: 999px;
+          all: unset; flex: 1; height: 46px; border-radius: 12px;
           display: flex; align-items: center; justify-content: center;
           font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700;
           color: #fff; cursor: pointer;
@@ -875,8 +1099,8 @@ export default function InsurancePage() {
         }
         .ip-plan-buy:hover { transform: translateY(-2px); filter: brightness(1.08); }
         .ip-plan-advisor {
-          all: unset; height: 44px; padding: 0 14px; border-radius: 999px;
-          font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 600;
+          all: unset; height: 46px; padding: 0 16px; border-radius: 12px;
+          font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 700;
           color: ${B.gray}; cursor: pointer;
           border: 1.5px solid rgba(0,0,0,0.10);
           transition: border-color 0.25s, color 0.25s;
@@ -884,39 +1108,51 @@ export default function InsurancePage() {
         }
         .ip-plan-advisor:hover { border-color: var(--plan-accent, ${B.teal}); color: var(--plan-accent, ${B.teal}); }
 
-        /* ══ EMPTY validation state ════════════════════════════════════════ */
-        .ip-field-error .ip-input,
-        .ip-field-error .ip-select {
-          border-color: ${B.coral}; box-shadow: 0 0 0 3px rgba(232,80,58,0.12);
-        }
-
-        /* ══ SUCCESS banner ════════════════════════════════════════════════ */
+        /* ══ SUCCESS BANNER ══ */
         .ip-success-banner {
-          background: linear-gradient(135deg, ${B.teal}, #17f1d1);
-          border-radius: 20px; padding: 28px 32px;
+          background: linear-gradient(135deg, var(--cat-accent, ${B.teal}), #17f1d1);
+          border-radius: 20px; padding: 28px 36px;
           display: flex; align-items: center; gap: 20px;
           margin-bottom: 40px; flex-wrap: wrap;
-          box-shadow: 0 8px 32px rgba(45,191,191,0.28);
+          box-shadow: 0 12px 40px var(--cat-accent, ${B.teal})35;
           animation: ipStepIn 0.55s cubic-bezier(0.22,1,0.36,1) both;
         }
-        .ip-success-icon { font-size: 40px; flex-shrink: 0; }
+        .ip-success-icon { font-size: 44px; flex-shrink: 0; }
         .ip-success-text h3 {
-          font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 800;
+          font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 800;
           color: #fff; margin: 0 0 4px;
         }
         .ip-success-text p { font-size: 14px; color: rgba(255,255,255,0.82); margin: 0; }
 
-        /* ══ UIVERSE BUTTON ════════════════════════════════════════════════ */
+        /* ══ PLANS BOTTOM ACTIONS ══ */
+        .ip-plans-bottom-actions {
+          display: flex; gap: 14px; flex-wrap: wrap; align-items: center;
+        }
+        .ip-advisor-btn {
+          all: unset; display: inline-flex; align-items: center; gap: 8px;
+          height: 52px; padding: 0 28px; border-radius: 999px;
+          font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700;
+          color: var(--cat-accent, ${B.teal}); cursor: pointer;
+          border: 1.5px solid var(--cat-accent, ${B.teal})55;
+          transition: background 0.25s, border-color 0.25s, transform 0.25s;
+        }
+        .ip-advisor-btn:hover {
+          background: var(--cat-accent, ${B.teal})10;
+          border-color: var(--cat-accent, ${B.teal});
+          transform: translateY(-2px);
+        }
+
+        /* ══ UIVERSE BUTTON (unchanged) ══ */
         .ip-uv-btn {
           all: unset; position: relative; display: inline-flex;
           height: 52px; align-items: center; border-radius: 9999px; padding: 0 32px;
-          font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 600;
+          font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 700;
           color: #fff; letter-spacing: .01em; cursor: pointer; user-select: none;
           min-width: 160px; justify-content: center;
         }
         .ip-uv-bg {
           overflow: hidden; border-radius: 9999px; position: absolute; inset: 0;
-          background: var(--btn-bg); box-shadow: 0 4px 24px rgba(0,0,0,.16);
+          background: var(--btn-bg); box-shadow: 0 6px 28px rgba(0,0,0,.18);
           transition: transform 1.8s cubic-bezier(0.19,1,0.22,1);
         }
         .ip-uv-btn:hover .ip-uv-bg { transform: scale(1.04); }
@@ -934,6 +1170,12 @@ export default function InsurancePage() {
         .ip-uv-hover { position: absolute; top: 0; left: 0; opacity: 0; transform: translateY(70%); }
         .ip-uv-btn:hover .ip-uv-static { opacity: 0; transform: translateY(-70%); transition: transform 1.4s cubic-bezier(0.19,1,0.22,1), opacity .3s linear; }
         .ip-uv-btn:hover .ip-uv-hover  { opacity: 1; transform: translateY(0); transition: transform 1.4s cubic-bezier(0.19,1,0.22,1), opacity 1.4s cubic-bezier(0.19,1,0.22,1); }
+
+        /* ══ SECTION DIVIDER ══ */
+        .ip-section-divider {
+          height: 1px; background: ${B.border};
+          margin: 0 9vw; position: relative; z-index: 1;
+        }
       `}</style>
 
       <div
@@ -942,14 +1184,19 @@ export default function InsurancePage() {
         style={{
           "--cat-accent": config.accent,
           "--cat-accent-alpha": `${config.accent}18`,
+          "--cat-bg": config.bg,
         } as React.CSSProperties}
       >
-        {/* ── Hero Banner ── */}
+        {/* ══ HERO ══ */}
         <div className="ip-hero">
+          <div className="ip-hero-accent-bar" />
           <div className="ip-hero-inner">
-            <div>
+            <div className="ip-hero-left">
               <button className="ip-back-btn" onClick={() => router.back()}>
-                ← Back to all products
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <path d="M9 2L4 7l5 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                All Products
               </button>
               <p className="ip-eyebrow">{config.sublabel}</p>
               <div className="ip-heading-wrap">
@@ -977,19 +1224,39 @@ export default function InsurancePage() {
                 />
               </div>
               <p className="ip-hero-desc">{config.description}</p>
-            </div>
-            <div className="ip-hero-right">
-              <span className="ip-hero-icon">{config.icon}</span>
               <div className="ip-hero-badges">
-                {["IRDAI Approved","Instant Policy","Zero Paperwork"].map((b) => (
+                {["IRDAI Approved","Instant Policy","Zero Paperwork","Cashless Claims"].map((b) => (
                   <span key={b} className="ip-hero-badge">{b}</span>
                 ))}
+              </div>
+            </div>
+
+            <div className="ip-hero-right">
+              <div className="ip-hero-icon-wrap">
+                <span className="ip-hero-icon">{config.icon}</span>
+              </div>
+              <div className="ip-hero-stat-row">
+                <div className="ip-hero-stat">
+                  <div>
+                    <div className="ip-hero-stat-val">2Cr+</div>
+                    <div className="ip-hero-stat-lbl">Customers</div>
+                  </div>
+                </div>
+                <div className="ip-hero-stat">
+                  <div>
+                    <div className="ip-hero-stat-val">₹3500Cr</div>
+                    <div className="ip-hero-stat-lbl">Claims Settled</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* ── Progress Bar ── */}
+        {/* ══ TRUST STRIP ══ */}
+        <TrustStrip />
+
+        {/* ══ PROGRESS BAR ══ */}
         {!showPlans && (
           <div className="ip-progress-wrap">
             <div className="ip-progress-top">
@@ -1000,60 +1267,93 @@ export default function InsurancePage() {
                       <span className="ip-progress-step-num">
                         {i < currentStep ? "✓" : i + 1}
                       </span>
-                      <span className="ip-progress-step-label" style={{ display: "none" }}>{s.title}</span>
+                      <span className="ip-progress-step-name">{s.title}</span>
                     </div>
                     {i < steps.length - 1 && <span className="ip-progress-sep">›</span>}
                   </React.Fragment>
                 ))}
               </div>
-              <span className="ip-progress-pct">
-                Step {currentStep + 1} of {totalSteps}
-              </span>
+              <div className="ip-progress-meta">
+                <span className="ip-progress-pct">
+                  {Math.round(((currentStep) / totalSteps) * 100)}% Complete
+                </span>
+              </div>
             </div>
             <div className="ip-progress-bar">
-              <div className="ip-progress-fill" style={{ width: `${Math.max(progress, 8)}%` }} />
+              <div className="ip-progress-fill" style={{ width: `${Math.max(progress, 6)}%` }} />
             </div>
           </div>
         )}
 
-        {/* ── Form Steps ── */}
+        {/* ══ FORM STEPS ══ */}
         {!showPlans && (
-          <div className="ip-form-wrap">
-            <div key={currentStep} className="ip-step-card">
-              <div className="ip-step-header">
-                <div className="ip-step-num">Step {currentStep + 1} — {step.title}</div>
-                <h2 className="ip-step-title">{step.title}</h2>
-                <p className="ip-step-subtitle">{step.subtitle}</p>
-              </div>
+          <div className="ip-content-layout">
+            {/* Main form */}
+            <div>
+              <div key={currentStep} className="ip-step-card">
+                <div className="ip-step-header">
+                  <div className="ip-step-num">Step {currentStep + 1} of {totalSteps} — {step.title}</div>
+                  <h2 className="ip-step-title">{step.title}</h2>
+                  <p className="ip-step-subtitle">{step.subtitle}</p>
+                </div>
 
-              <div className="ip-fields">
-                {step.fields.map((field) => (
-                  <FormField
-                    key={field.key}
-                    field={field}
-                    value={formData[field.key] || ""}
-                    onChange={(v) => handleField(field.key, v)}
-                    accent={config.accent}
+                <div className="ip-fields">
+                  {step.fields.map((field) => (
+                    <FormField
+                      key={field.key}
+                      field={field}
+                      value={formData[field.key] || ""}
+                      onChange={(v) => handleField(field.key, v)}
+                      accent={config.accent}
+                    />
+                  ))}
+                </div>
+
+                <div className="ip-form-actions">
+                  <button className="ip-back-link" onClick={handleBack}>
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                      <path d="M9 2L4 7l5 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    {currentStep === 0 ? "All Products" : "Previous"}
+                  </button>
+                  <AnimatedButton
+                    label={currentStep === totalSteps - 1 ? "See My Plans →" : "Continue →"}
+                    bg={config.accent}
+                    layers={["#17f1d1", "#a374ff", config.accent]}
+                    onClick={handleNext}
                   />
+                </div>
+              </div>
+            </div>
+
+            {/* Sidebar */}
+            <div className="ip-sidebar">
+              <div className="ip-sidebar-info">
+                <h4>{config.icon} {config.label}</h4>
+                <p>{config.description}</p>
+              </div>
+              <div className="ip-sidebar-perks">
+                <h5>Why TransIndia</h5>
+                {[
+                  { icon: "🔍", title: "Radical Transparency", sub: "No hidden clauses. No pushy upsells." },
+                  { icon: "🎓", title: "Expert-Led Guidance", sub: "IRDAI licensed advisors, always." },
+                  { icon: "⚡", title: "Instant Coverage", sub: "Policy in your inbox within minutes." },
+                  { icon: "💬", title: "24/7 Human Support", sub: "Real people, not bots, always." },
+                ].map((p) => (
+                  <div key={p.title} className="ip-perk">
+                    <div className="ip-perk-icon">{p.icon}</div>
+                    <div className="ip-perk-text">
+                      <p>{p.title}</p>
+                      <span>{p.sub}</span>
+                    </div>
+                  </div>
                 ))}
               </div>
-
-              <div className="ip-form-actions">
-                <button className="ip-back-link" onClick={handleBack}>
-                  ← {currentStep === 0 ? "All Products" : "Previous"}
-                </button>
-                <AnimatedButton
-                  label={currentStep === totalSteps - 1 ? "See My Plans →" : "Continue →"}
-                  bg={config.accent}
-                  layers={["#17f1d1", "#a374ff", config.accent]}
-                  onClick={handleNext}
-                />
-              </div>
             </div>
           </div>
         )}
 
-        {/* ── Plans Section ── */}
+        {/* ══ PLANS SECTION ══ */}
         {showPlans && (
           <div className="ip-plans-section" ref={plansRef}>
             {/* Success banner */}
@@ -1061,19 +1361,28 @@ export default function InsurancePage() {
               <span className="ip-success-icon">🎉</span>
               <div className="ip-success-text">
                 <h3>Your personalised plans are ready, {formData["name"] || "there"}!</h3>
-                <p>Based on your profile — {totalSteps} steps completed · {config.label} · Sorted by best fit</p>
+                <p>
+                  Based on your profile · {totalSteps} steps completed · {config.label} · Sorted by best fit
+                </p>
               </div>
             </div>
 
-            <div className="ip-plans-header">
-              <p className="ip-plans-eyebrow">Your Matched Plans</p>
-              <h2 className="ip-plans-heading">
-                Best <em>{config.label}</em><br />plans for you.
-              </h2>
-              <p className="ip-plans-sub">
-                All plans are IRDAI approved. Compare and buy in under 5 minutes —
-                policy document delivered instantly.
-              </p>
+            <div className="ip-plans-header-row">
+              <div>
+                <p className="ip-plans-eyebrow">Your Matched Plans</p>
+                <h2 className="ip-plans-heading">
+                  Best <em>{config.label}</em><br />plans for you.
+                </h2>
+                <p className="ip-plans-sub">
+                  All plans are IRDAI approved. Compare and buy in under 5 minutes —
+                  policy document delivered instantly.
+                </p>
+              </div>
+              <div className="ip-plans-actions-top">
+                <span className="ip-plans-irdai">IRDAI Regulated</span>
+                <span className="ip-plans-irdai">ISO 27001 Certified</span>
+                <span className="ip-plans-irdai">4.8★ App Rating</span>
+              </div>
             </div>
 
             <div className="ip-plans-grid">
@@ -1082,24 +1391,19 @@ export default function InsurancePage() {
               ))}
             </div>
 
-            <div style={{ marginTop: 40, display: "flex", gap: 14, flexWrap: "wrap" }}>
+            <div className="ip-plans-bottom-actions">
               <AnimatedButton
                 label="← Edit My Details"
                 bg={B.charcoal}
                 layers={["#444", "#222", B.charcoal]}
-                onClick={() => { setShowPlans(false); setCurrentStep(0); topRef.current?.scrollIntoView({ behavior: "smooth" }); }}
-              />
-              <button
-                style={{
-                  all: "unset", display: "inline-flex", alignItems: "center",
-                  height: 52, padding: "0 28px", borderRadius: 999,
-                  fontFamily: "'Outfit',sans-serif", fontSize: 15, fontWeight: 600,
-                  color: config.accent, cursor: "pointer",
-                  border: `1.5px solid ${config.accent}55`,
-                  transition: "background 0.25s",
+                onClick={() => {
+                  setShowPlans(false);
+                  setCurrentStep(0);
+                  topRef.current?.scrollIntoView({ behavior: "smooth" });
                 }}
-              >
-                🎓 Talk to an advisor
+              />
+              <button className="ip-advisor-btn">
+                🎓 Talk to an Advisor
               </button>
             </div>
           </div>
