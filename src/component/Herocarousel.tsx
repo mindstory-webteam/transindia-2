@@ -180,7 +180,7 @@ function SlidePanel({ slide, active, index }: { slide: Slide; active: boolean; i
           rgba(10,10,10,${Math.max(overlay - 0.2, 0)}) 100%)`,
       }} />
       <div className={`ti-content${active ? " ti-content-in" : ""}`}>
-        <span className="ti-badge">{slide.badge}</span>
+        {/* <span className="ti-badge">{slide.badge}</span> */}
 
         {/* ── ShuffleText headlines ── */}
         <div className="ti-headline-wrap">
