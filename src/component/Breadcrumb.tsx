@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 
 export interface BreadcrumbItem {
   label: string;
@@ -8,9 +9,15 @@ export interface BreadcrumbItem {
 
 interface BreadcrumbProps {
   items: BreadcrumbItem[];
+  rightImage?: {
+    src: string;
+    alt: string;
+    width?: number;
+    height?: number;
+  };
 }
 
-export default function Breadcrumb({ items }: BreadcrumbProps) {
+export default function Breadcrumb({ items = [], rightImage }: BreadcrumbProps) {
   return (
     <nav
       aria-label="Breadcrumb"
@@ -93,6 +100,26 @@ export default function Breadcrumb({ items }: BreadcrumbProps) {
             )}
           </span>
         ))}
+
+        {/* Right-side image — pushed to far right via marginLeft: auto */}
+        {rightImage && (
+          <div
+            style={{
+              marginLeft: "auto",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <Image
+              src={rightImage.src}
+              alt={rightImage.alt}
+              width={rightImage.width ?? 120}
+              height={rightImage.height ?? 36}
+              style={{ objectFit: "contain" }}
+              priority
+            />
+          </div>
+        )}
       </div>
     </nav>
   );
