@@ -247,7 +247,7 @@ export default function CoverageSection() {
           background: ${B.white};
           width: 100%; overflow: hidden;
           color: ${B.charcoal};
-             padding: 26px 1vw 100px;
+          padding: 96px 9vw 100px;
           position: relative;
         }
         .cv-root::before {

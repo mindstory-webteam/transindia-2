@@ -17,16 +17,18 @@ const B = {
 
 // ─── Image Map (replace with your actual image paths) ─────────────────────────
 const IMG_MAP: Record<string, string> = {
-  bike:       "/icon-img/bike.png",
-  car:        "/icon-img/car.png",
-  health:     "/icon-img/health.png",
-  term:       "/icon-img/term.png",
-  investment: "/icon-img/investment.png",
-  child:      "/icon-img/child.png",
-  pension:    "/icon-img/pension.png",
-  travel:     "/icon-img/travel.png",
-  home:       "/icon-img/home.png",
-  business:   "/icon-img/business.png",
+   health:      "/images/icons/health_18725220.svg",
+  life:        "/images/icons/health-insurance_15341171.svg",
+  car:         "/images/icons/car_416772.svg",
+  bike:        "/images/icons/motor-sports_324247.svg",
+  home:        "/images/icons/home_1299859.svg",
+  travel:      "/images/icons/suitcase_4988833.svg",
+  term:        "/images/icons/document_2280730.svg",
+  investment:  "/images/icons/active_11135146.svg",
+  business:    "/images/icons/business-presentation_6818222.svg",
+  critical:    "/images/icons/attentiveness_18331657.svg",
+  child:       "/images/icons/baby_15540358.svg",
+  pension:     "/images/icons/retirement-plan_10496565.svg",
 };
 
 // ─── Categories ───────────────────────────────────────────────────────────────

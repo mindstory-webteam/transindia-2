@@ -565,7 +565,7 @@ function HowItWorks() {
           <h2 style={{ fontFamily:"'Playfair Display', serif", fontSize:"clamp(1.5rem,2.5vw,2rem)", fontWeight:800, color:B.charcoal, margin:"0 0 8px", lineHeight:1.15, letterSpacing:"-0.02em" }}>
             Find the right <em style={{ color:B.teal, fontStyle:"italic" }}>insurance.</em>
           </h2>
-          <p style={{ fontSize:"0.85rem", color:"#666", margin:0, lineHeight:1.7, fontFamily:"'Outfit', sans-serif", maxWidth:360 }}>
+          <p style={{ fontSize:"0.85rem", color:"#666", margin:0, lineHeight:1.7, fontFamily:"'Outfit', sans-serif", maxWidth:360 }}> 
             Browse, compare & buy in under 5 minutes —<br/>
             <strong style={{ color:B.charcoal, fontWeight:700 }}>no branch visits, no paperwork.</strong>
           </p>
@@ -705,7 +705,7 @@ function Sidebar({ activeId, onSelect }: { activeId?:string; onSelect:(id:string
           );
         })}
       </nav>
-      <div style={{ marginTop:16, background:"linear-gradient(135deg,#E8503A,#f7931e)", borderRadius:14, padding:"18px 16px", textAlign:"center", boxShadow:"0 6px 24px rgba(232,80,58,0.25)" }}>
+      {/* <div style={{ marginTop:16, background:"linear-gradient(135deg,#E8503A,#f7931e)", borderRadius:14, padding:"18px 16px", textAlign:"center", boxShadow:"0 6px 24px rgba(232,80,58,0.25)" }}>
         <div style={{ display:"flex", justifyContent:"center", marginBottom:8 }}>
           <Ico src="/images/icons/phone.png" size={28} alt="phone"/>
         </div>
@@ -714,7 +714,7 @@ function Sidebar({ activeId, onSelect }: { activeId?:string; onSelect:(id:string
         <a href="tel:1800-000-0000" style={{ display:"block", background:B.white, color:"#E8503A", padding:"8px 0", borderRadius:9, fontWeight:800, fontSize:"0.82rem", textDecoration:"none", fontFamily:"'Outfit', sans-serif" }}>
           1800-000-0000
         </a>
-      </div>
+      </div> */}
     </aside>
   );
 }
